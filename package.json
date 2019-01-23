@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server -p 1337"
+    "start-server": "http-server -p 1337",
+    "watch": "webpack --watch --progress"
   },
   "keywords": [],
   "author": "",
