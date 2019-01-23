@@ -1,5 +1,9 @@
 import Phaser from 'phaser';
 
+let x = 0;
+let y = 0;
+let cursors;
+
 function main() {
     const config = {
         type: Phaser.AUTO,
@@ -13,7 +17,8 @@ function main() {
         },
         scene: {
             preload: preload,
-            create: create
+            create: create,
+            update: update
         }
     };
 
@@ -22,14 +27,31 @@ function main() {
 
 function preload ()
 {
+    cursors = this.input.keyboard.createCursorKeys();
+
     this.load.setBaseURL('http://labs.phaser.io');
     this.load.image('sky', 'assets/skies/space3.png');
     this.load.image('logo', 'assets/sprites/phaser3-logo.png');
     this.load.image('red', 'assets/particles/red.png');
 }
 
+function update() {
+    if (cursors.left.isDown)
+    {
+        x += 10;
+        this.cameras.main.setPosition(x, y);
+    }
+    else if (cursors.right.isDown)
+    {
+        x -= 10;
+        this.cameras.main.setPosition(x, y);
+    }
+}
+
 function create ()
 {
+    this.cameras.main.setBounds(0, 0, 8000, 600);
+
     this.add.image(400, 300, 'sky');
 
     const particles = this.add.particles('red');
