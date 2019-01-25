@@ -24,7 +24,7 @@ function main() {
         }
     };
     socket = io()
-    setupSocket(socet)
+    setupSocket(socket)
     new Phaser.Game(config);
 }
 
