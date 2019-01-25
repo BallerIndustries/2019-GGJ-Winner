@@ -1,16 +1,13 @@
 const express = require('express');
 const app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 const port = process.env.PORT || 9876;
 
 app.use(express.static(__dirname + '/dist'));
 
-io.on('connection', function(socket){
+io.on('connection', (socket) => {
   console.log('a user connected');
 });
 
-http.listen(port, function(){
-  console.log(`Musical chairs listening on ${port}`);
-});
+server.listen(port, () => console.log(`Musical chairs listening on ${port}`));
