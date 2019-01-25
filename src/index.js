@@ -29,10 +29,10 @@ function preload ()
 {
     cursors = this.input.keyboard.createCursorKeys();
 
-    this.load.setBaseURL('http://labs.phaser.io');
-    this.load.image('sky', 'assets/skies/space3.png');
-    this.load.image('logo', 'assets/sprites/phaser3-logo.png');
-    this.load.image('red', 'assets/particles/red.png');
+    this.load.setBaseURL('/');
+    this.load.image('sky', 'assets/space3.png');
+    this.load.image('logo', 'assets/phaser3-logo.png');
+    this.load.image('red', 'assets/red.png');
 }
 
 function update() {
