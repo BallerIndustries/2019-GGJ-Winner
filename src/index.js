@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
+import io from 'socket.io-client';
 
 let x = 0;
 let y = 0;
 let cursors;
+let socket;
 
 function main() {
     const config = {
@@ -21,8 +23,15 @@ function main() {
             update: update
         }
     };
-
+    socket = io()
+    setupSocket(socet)
     new Phaser.Game(config);
+}
+
+function setupSocket(sock){
+    sock.on('connect',() => {
+        console.log('socket connected')
+    })
 }
 
 function preload ()
