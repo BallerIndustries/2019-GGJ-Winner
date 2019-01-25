@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "start": "node server.js",
+    "start": "npm run build && node server.js",
     "watch": "webpack --watch --progress"
   },
   "keywords": [],
