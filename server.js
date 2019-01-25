@@ -11,8 +11,6 @@ io.on('connection', function(socket){
   console.log('a user connected');
 });
 
-http.listen(3000, function(){
-  console.log('Socket IO listening on 3000');
+http.listen(port, function(){
+  console.log(`Musical chairs listening on ${port}`);
 });
-
-app.listen(port, () => console.log(`Musical chairs listening on port ${port}!`));
