@@ -3,9 +3,9 @@ const app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(express.static('dist'));
+app.use(express.static(__dirname + '/dist'));
 
 io.on('connection', function(socket){
   console.log('a user connected');
