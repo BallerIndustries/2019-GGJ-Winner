@@ -36,12 +36,13 @@ function setupSocket(socket) {
     });
 
     socket.on('your_position', function(playerState) {
-        console.log(`Got your_position = ${JSON.stringify(playerState)}`)
-        createPlayer(playerState)
+        console.log(`Got your_position = ${JSON.stringify(playerState)}`);
+        createPlayer(playerState);
     });
 
-    socket.on('new_player',(msg) => {
-        console.log('New Player Joined: ',msg)
+    socket.on('new_player',(enemyState) => {
+        console.log('New Player Joined: ',enemyState)
+        spawnEnemy(enemyState)
     });
 
     socket.on('player_left',(msg) => {
@@ -91,6 +92,11 @@ function createPlayer(playerState) {
     //debugger
     player = game.add.image(playerState.x, playerState.y, 'player');
     player.setScale(0.35)
+}
+
+function spawnEnemy(enemyState) {
+    const enemy = game.add.image(enemyState.x, enemyState.y, 'player');
+    enemy.setScale(0.35)
 }
 
 main();
