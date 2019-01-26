@@ -29,6 +29,7 @@ export default class Game extends Phaser.Scene {
 
     create ()
     {
+        this.physics.world.setBounds(0, 0, 1024, 660);
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
         console.log('created game');
@@ -110,6 +111,7 @@ export default class Game extends Phaser.Scene {
         // Add a collider
         playerContainer.setSize(playerSprite.width, playerSprite.height);
         this.physics.world.enable(playerContainer);
+        this.playerContainer.setBoundsCollision()
 
         return {playerContainer, playerSprite};
     }
