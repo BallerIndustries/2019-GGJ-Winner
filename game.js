@@ -15,7 +15,9 @@ let gameState = GAME_STATES.LOBBY
 
 const GRID_WIDTH = 800
 const GRID_HEIGHT = 600
-
+const MIN_PRECHAIR_WAIT = 5
+const MAX_PRECHAIR_WAIT = 15
+const CHAIR_ROUND_WAIT = 15
 
 module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
@@ -103,7 +105,9 @@ function changeState(to) {
     let prevState = gameState
     gameState = to
     if (ck in stateChangeMap) {
-        stateChangeMap[ck](prevState, to)
+        for(let f in stateChangeMap[ck]){
+            f(prevState, to)
+        }
     }
 }
 
@@ -112,7 +116,17 @@ function getCurrentState() {
 }
 
 function onStateChange(from, to, func) {
-    stateChangeMap[stateChangeKey(from, to)] = func
+    if(Array.isArray(from)){
+        for (let f in from){
+            onStateChange(f,to,func)
+        }
+        return
+    }
+    let ck = stateChangeKey(from, to)
+    if(!(ck in stateChangeMap)){
+        stateChangeMap[ck] = []
+    }
+    stateChangeMap[stateChangeKey(from, to)].push(func)
 }
 
 function startGame(){
@@ -121,9 +135,12 @@ function startGame(){
 
 // State handlers
 
-onStateChange(GAME_STATES.LOBBY,GAME_STATES.PRECHAIR,(from,to) => {
+onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR,(from,to) => {
+    let wait_time = getRandomInt(MIN_PRECHAIR_WAIT,MAX_PRECHAIR_WAIT)
+    console.log(`Waiting for ${wait_time} seconds for chairs`)
 
 })
+
 
 // ===== MISC =====
 

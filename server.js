@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -5,6 +6,9 @@ const io = require('socket.io')(server);
 const port = process.env.PORT || 9876;
 
 const game = require('./game.js')
+
+const TICK_RATE = 60
+let moveUpdates = {}
 
 app.use(express.static(__dirname + '/dist'));
 
@@ -29,9 +33,25 @@ io.on('connection', (socket) => {
   });
 
   socket.on('move_player',(msg) => {
-    game.movePlayer(playerId,msg.x,msg.y)
-    socket.broadcast.emit('move_player',{id: playerId, x: msg.x, y: msg.y})
+    moveUpdates[playerId] = msg
   })
 });
+
+function tick(){
+  if(0 === Object.keys(moveUpdates).length){
+    return
+  }
+  console.log(moveUpdates)
+  for(let msg in moveUpdates){
+    game.movePlayer(playerId,msg.x,msg.y)
+  }
+  let upd = _.each(moveUpdates,(v,k)=>{
+    return {id: k, x: v.x, y: v.y}
+  })
+  moveUpdates = {}
+  io.emit('move_player',upd)
+}
+
+setInterval(tick,Math.floor(1000/TICK_RATE))
 
 server.listen(port, () => console.log(`Musical chairs listening on ${port}`));
