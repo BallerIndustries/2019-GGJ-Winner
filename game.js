@@ -57,7 +57,7 @@ function getPlayerState(playerID) {
 
 function getSOW(playerID) {
     const enemies = _.pickBy(playerState, (val,key) => {
-        key !== playerID
+        return key !== playerID
     })
     return {
         gameState: gameState,
