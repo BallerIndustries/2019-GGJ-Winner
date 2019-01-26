@@ -59,7 +59,6 @@ export default class Game extends Phaser.Scene {
         const radians = degreesToRadians(this.playerSprite.angle - 90);
         const x = (6 * Math.sin(radians));
         const y = (6 * Math.cos(radians));
-        console.log(`x = ${x} y = ${y}`);
 
         if (this.cursors.up.isDown) {
             this.playerSprite.x -= x;
@@ -79,7 +78,6 @@ export default class Game extends Phaser.Scene {
     }
     
     createPlayer(playerState) {
-        //debugger
         this.playerSprite = this.add.image(playerState.x, playerState.y, 'player');
         this.playerSprite.setScale(0.35)
     }
@@ -114,7 +112,7 @@ export default class Game extends Phaser.Scene {
     }
     
     moveEnemy(enemyMoveState) {
-        const {id: enemyId, x, y} = enemyMoveState;
+        const {id: enemyId, x, y, angle} = enemyMoveState;
         //console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
         const enemy = this.enemies[enemyId];
     
@@ -127,10 +125,12 @@ export default class Game extends Phaser.Scene {
     
         enemyGameObject.x = x;
         enemyGameObject.y = y;
+        enemyGameObject.angle = angle;
     }
 
     setupSocket(socket) {
         const self = this
+
         socket.on('connect', () => {
             console.log('socket connected')
         });
@@ -157,9 +157,9 @@ export default class Game extends Phaser.Scene {
     
         socket.on('move_player',(enemyMoveState) => {
             // console.log('Enemy player moved: ', enemyMoveState);
-            for(let estate of enemyMoveState){
+            for(let eState of enemyMoveState){
                 // TODO: check for player id here
-                self.moveEnemy(estate)
+                self.moveEnemy(eState)
             }
         })
     }
@@ -169,7 +169,6 @@ function degreesToRadians(degrees) {
     return (degrees / 180.0) * Math.PI
 }
 
-
-function emitMove(x, y) {
-    socket.emit('move_player', {x, y})
+function emitMove(x, y, angle) {
+    socket.emit('move_player', {x, y, angle})
 }

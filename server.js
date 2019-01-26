@@ -25,6 +25,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('move_player',(playerState) => {
+    console.log(`playerState = ${JSON.stringify(playerState)}`);
     moveUpdates[playerId] = {id:playerId, x:playerState.x, y: playerState.y, angle: playerState.angle}
   })
   
@@ -52,7 +53,7 @@ function tick(){
   })
 
   moveUpdates = {}
-  io.emit('move_player',upd)
+  io.emit('move_player', upd)
 }
 
 setInterval(tick,Math.floor(1000/TICK_RATE))

@@ -27,10 +27,13 @@ module.exports.getPlayerState = getPlayerState;
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
     const y = getRandomInt(0, GRID_HEIGHT);
+    const angle = 0;
+
     const player = {
         id: playerID, 
         x, 
         y,
+        angle,
         name,
         alive: gameState === GAME_STATES.LOBBY
     };
