@@ -31,6 +31,7 @@ io.on('connection', (socket) => {
 
   socket.on('send_sow',() => {
     socket.emit('sow',game.getSOW(playerId));
+    socket.emit('player_state', game.getPlayerState(playerId));
   })
 
   socket.on('start_game',() => {

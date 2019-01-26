@@ -77,13 +77,13 @@ function getGameState(){
 }
 
 function getSOW(playerID) {
-    // const enemies = _.pickBy(playerState, (val,key) => {
-    //     return key !== playerID
-    // })
+    const enemies = _.pickBy(playerState, (val,key) => {
+        return key !== playerID
+    })
     return {
         playerID: playerID,
         gameState: gameState,
-        players: playerState,
+        players: enemies,
         chairs: chairState
     }
 }
@@ -119,6 +119,12 @@ function numPlayers(){
     return playerState.keys.length
 }
 
+function numPlayersAlive(){
+    return Object.entries(playerState).filter((entry) => {
+        return entry[1].alive
+    }).length
+}
+
 function changeState(to) {
     console.log(`Changing state from ${gameState} to ${to}`)
     let ck = stateChangeKey(gameState, to)
@@ -133,7 +139,7 @@ function changeState(to) {
 
 function onStateChange(from, to, func) {
     if(Array.isArray(from)){
-        for (let f in from){
+        for (let f of from){
             onStateChange(f,to,func)
         }
         return
@@ -151,7 +157,14 @@ function startGame(){
 
 // State handlers
 
-onStateChange(GAME_STATES.CHAIR,GAME_STATES.PRECHAIR, (from,to) => {
+onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,to) => {
+    // check win condition
+    // if(from === 'CHAIR'){
+    //     if(gameState.numPlayers <= 1){
+    //         changeState(GAME_STATES.FINALWINNER)
+    //         return
+    //     }
+    // }
     let wait_time = getRandomInt(MIN_PRECHAIR_WAIT,MAX_PRECHAIR_WAIT)
     console.log(`Waiting for ${wait_time} seconds for chairs`)
     setTimeout(() => {
@@ -160,7 +173,14 @@ onStateChange(GAME_STATES.CHAIR,GAME_STATES.PRECHAIR, (from,to) => {
 })
 
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
-    console.log(`Waiting ${CHAIR_ROUND_WAIT} in chair round`)
+    console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
+    // genreate chairs
+    let alive = game.numPlayersAlive
+    if(alive <= 1){
+        changeState(GAME_STATES.FINALWINNER)
+        return
+    }
+    let numchairs = alive - 1
 })
 
 

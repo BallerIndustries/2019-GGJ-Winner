@@ -41,7 +41,7 @@ export default class Name extends Phaser.Scene {
                     dest = 'Game'
                 }
                 console.log('going to: ',dest)
-                this.scene.start(dest,{name: this.name.join('')});
+                this.scene.start(dest,{name: this.name.join(''), from: 'Name'});
             }
             if(this.name.length >= 10){
                 return

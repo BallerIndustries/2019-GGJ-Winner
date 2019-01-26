@@ -38,7 +38,8 @@ export default class Name extends Phaser.Scene {
             if(msg.from === 'LOBBY' && msg.to === 'PRECHAIR'){
                 self.scene.start('Game',{
                     name: self.name,
-                    player_id: self.player_id
+                    player_id: self.player_id,
+                    from: 'Lobby'
                 });
             }
         })
@@ -65,10 +66,11 @@ export default class Name extends Phaser.Scene {
             n.destroy()
         }
         let offset = 80
+        this.names.push(this.add.text(100, offset, this.name, style))
         for(let name in this.players){
+            offset += 30
             let p = this.players[name]
             let t = this.add.text(100, offset, p.name, style);
-            offset += 30
             this.names.push(t)
         }
     }

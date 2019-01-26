@@ -15,6 +15,7 @@ export default class Game extends Phaser.Scene {
     init(data){
         this.name = data.name
         this.player_id = data.player_id
+        this.from = data.from
     }
 
     preload ()
@@ -31,7 +32,11 @@ export default class Game extends Phaser.Scene {
         console.log('created game');
         this.setupSocket(socket);
         console.log('socket set up')
-        socket.emit('send_sow')
+        if(this.from == 'Lobby'){
+            socket.emit('send_sow')
+        }else{
+            socket.emit('login',{name: this.name})
+        }
         
     }
 
@@ -100,7 +105,7 @@ export default class Game extends Phaser.Scene {
         const enemy = this.enemies[enemyId];
     
         if (enemy === undefined) {
-            console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
+            console.log(`Woah that was unexpected! Unable to find enemy with enemyId = ${enemyId}`)
             return
         }
     
@@ -176,6 +181,13 @@ export default class Game extends Phaser.Scene {
         socket.on('move_player',(enemyMoveStates) => {
             enemyMoveStates.forEach(enemyMoveState => self.moveEnemy(enemyMoveState));
         });
+
+        socket.on('state_change',(msg) => {
+            const {from,to} = msg
+            if(from === 'PRECHAIR' && to === 'CHAIR'){
+                console.log('Changed to CHAIR state')
+            }
+        })
     }
 }
 
