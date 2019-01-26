@@ -1,3 +1,11 @@
+const GAME_STATES = {
+    LOBBY: 'LOBBY',
+    PRECHAIR: 'PRECHAIR',
+    CHAIR: 'CHAIR',
+    CHAIRWINNER: 'CHAIRWINNER',
+    FINALWINNER: 'FINALWINNER'
+};
+
 const playerState = {}
 const stateChangeMap = {}
 let chairState = []
@@ -6,13 +14,6 @@ let gameState = GAME_STATES.LOBBY
 const GRID_WIDTH = 800
 const GRID_HEIGHT = 600
 
-const GAME_STATES = {
-    LOBBY: 'LOBBY',
-    PRECHAIR: 'PRECHAIR',
-    CHAIR: 'CHAIR',
-    CHAIRWINNER: 'CHAIRWINNER',
-    FINALWINNER: 'FINALWINNER'
-};
 
 module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
