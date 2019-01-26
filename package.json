@@ -7,7 +7,6 @@
     "start-dev": "webpack && nodemon server.js",
     "start": "node server.js",
     "heroku-postbuild": "webpack",
-    "postinstall": "webpack",
     "watch": "webpack --watch --progress"
   },
   "keywords": [],
