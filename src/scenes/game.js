@@ -68,8 +68,8 @@ export default class Game extends Phaser.Scene {
 
         // const r = 5;
         const radians = degreesToRadians(this.playerSprite.angle - 90);
-        const x = (200 * Math.sin(radians));
-        const y = (200 * Math.cos(radians));
+        const x = (250 * Math.sin(radians));
+        const y = (250 * Math.cos(radians));
 
         if (this.cursors.up.isDown) {
             this.playerContainer.body.setVelocity(-x, y);
@@ -106,9 +106,11 @@ export default class Game extends Phaser.Scene {
         const playerNameGameObject = this.add.text(-20, -40, name, {fontSize: '14px', fill: '#000000'});
         playerContainer.add([playerSprite, playerNameGameObject]);
 
+        const scaledWidth = playerSprite.width * 0.17;
+        const scaledHeight = playerSprite.height * 0.17;
 
         // Add a collider
-        playerContainer.setSize(playerSprite.width, playerSprite.height);
+        playerContainer.setSize(scaledWidth, scaledHeight);
         this.physics.world.enable(playerContainer);
         playerContainer.body.setCollideWorldBounds(true);
 
