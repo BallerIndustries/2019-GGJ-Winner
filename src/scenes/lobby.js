@@ -7,16 +7,29 @@ export default class Name extends Phaser.Scene {
         this.players = {}
         this.player_id = null
         this.names = []
+        this.enterKey = null
     }
 
     init(data){
         this.name = data.name
     }
 
+    update() {
+        if (this.enterKey === null) {
+            return
+        }
+
+        if (this.enterKey.isDown) {
+            socket.emit('start_game')
+        }
+    }
+
     preload (){
     }
 
     create (){
+        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
         let self = this
         // Setup socket
         socket.removeAllListeners()

@@ -175,7 +175,7 @@ onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
     console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
     // genreate chairs
-    let alive = game.numPlayersAlive
+    let alive = numPlayersAlive()
     if(alive <= 1){
         changeState(GAME_STATES.FINALWINNER)
         return
