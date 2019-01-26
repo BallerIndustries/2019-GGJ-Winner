@@ -48,7 +48,7 @@ function removePlayer(playerID) {
     console.log(`playerState = ${JSON.stringify(playerState)}`)
 }
 
-function movePlayer(playerID, x, y) {
+function movePlayer(playerID, x, y, angle) {
     const player = playerState[playerID]
 
     if (player === undefined) {
@@ -59,6 +59,7 @@ function movePlayer(playerID, x, y) {
 
     playerState[playerID].x = x
     playerState[playerID].y = y
+    playerState[playerID].angle = angle
 }
 
 function getPlayerState(playerID) {

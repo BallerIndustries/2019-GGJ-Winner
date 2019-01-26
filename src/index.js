@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 let playerSprite = null;
 let cursors = null;
 let socket = null;
+let game = null;
 
 function main() {
     const config = {
@@ -57,8 +58,6 @@ function setupSocket(socket) {
             moveEnemy(estate)
         }
     });
-
-
 }
 
 function preload() {
@@ -75,12 +74,13 @@ function update() {
 
     let hasMoved = false;
 
+    // Tank controls, left and right rotate the sprite.
     if (cursors.left.isDown) {
-        playerSprite.x -= 6;
+        playerSprite.angle -= 6;
         hasMoved = true;
     }
     else if (cursors.right.isDown) {
-        playerSprite.x += 6;
+        playerSprite.angle += 6;
         hasMoved = true;
     }
 
@@ -94,15 +94,13 @@ function update() {
     }
 
     if (hasMoved) {
-        const {x, y} = playerSprite;
-        emitMove(x, y)
+        const {x, y, angle} = playerSprite;
+        emitMove(x, y, angle)
     }
 }
 
-let game = null;
-
-function emitMove(x, y) {
-    socket.emit('move_player', {x, y})
+function emitMove(x, y, angle) {
+    socket.emit('move_player', {x, y, angle})
 }
 
 function create() {
@@ -117,7 +115,7 @@ function create() {
 function createPlayer(playerState) {
     //debugger
     playerSprite = game.add.image(playerState.x, playerState.y, 'player');
-    playerSprite.setScale(0.35)
+    playerSprite.setScale(0.35);
 }
 
 const enemies = {};
@@ -126,14 +124,14 @@ function removeEnemy(enemyId) {
     const enemy = enemies[enemyId];
 
     if (enemy === undefined) {
-        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
-        return
+        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`);
+        return;
     }
 
     // Remove the game object from Phaser
-    const {enemyState, enemyGameObject} = enemy
-    enemyGameObject.setActive(false)
-    enemyGameObject.setVisible(false)
+    const {enemyState, enemyGameObject} = enemy;
+    enemyGameObject.setActive(false);
+    enemyGameObject.setVisible(false);
 
     // Remove this enemy from our map of enemies
     delete enemy[enemyId]
@@ -152,8 +150,8 @@ function createStateOfWorld(stateOfWorld) {
 }
 
 function moveEnemy(enemyMoveState) {
-    const {id: enemyId, x, y} = enemyMoveState;
-    console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
+    const {id: enemyId, x, y, angle} = enemyMoveState;
+    console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y} angle = ${angle}`);
     const enemy = enemies[enemyId];
 
     if (enemy === undefined) {
@@ -165,6 +163,7 @@ function moveEnemy(enemyMoveState) {
 
     enemyGameObject.x = x;
     enemyGameObject.y = y;
+    enemyGameObject.angle = angle;
 }
 
 main();
