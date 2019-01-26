@@ -5,8 +5,9 @@ export default class Game extends Phaser.Scene {
     constructor ()
     {
         super({ key: 'Game' });
-        this.enemies = {}
-        this.playerSprite = null
+        this.enemies = {};
+        this.playerSprite = null;
+        this.playerContainer = null;
     }
 
     init(data){
@@ -61,25 +62,35 @@ export default class Game extends Phaser.Scene {
         const y = (6 * Math.cos(radians));
 
         if (this.cursors.up.isDown) {
-            this.playerSprite.x -= x;
-            this.playerSprite.y += y;
+            this.playerContainer.x -= x;
+            this.playerContainer.y += y;
             hasMoved = true;
         }
         else if (this.cursors.down.isDown) {
-            this.playerSprite.x += x;
-            this.playerSprite.y -= y;
+            this.playerContainer.x += x;
+            this.playerContainer.y -= y;
             hasMoved = true;
         }
 
         if (hasMoved) {
-            const {x, y, angle} = this.playerSprite;
+            const {x, y} = this.playerContainer;
+            const angle = this.playerSprite.angle;
             emitMove(x, y, angle)
         }
     }
     
     spawnPlayer(playerState) {
-        this.playerSprite = this.add.image(playerState.x, playerState.y, 'player');
-        this.playerSprite.setScale(0.17)
+        const {x, y, name} = playerState;
+
+        const playerContainer = this.add.container(x, y);
+        const playerSprite = this.add.image(0, 0, 'player');
+        playerSprite.setScale(0.17);
+
+        const playerNameGameObject = this.add.text(-20, -40, name,{ fontSize: '14px', fill: '#000000' });
+        playerContainer.add([playerSprite, playerNameGameObject]);
+
+        this.playerContainer = playerContainer;
+        this.playerSprite = playerSprite;
     }
 
     removeEnemy(enemyId) {
