@@ -31,8 +31,9 @@ function setupSocket(socket) {
         console.log('socket connected')
     });
 
-    socket.on('sow',(msg) => {
-        console.log('Got SOW: ',msg)
+    socket.on('sow',(stateOfWorld) => {
+        console.log('Got SOW: ',stateOfWorld)
+        createStateOfWorld(stateOfWorld)
     });
 
     socket.on('your_position', function(playerState) {
@@ -118,6 +119,13 @@ function spawnEnemy(enemyState) {
     const enemyGameObject = game.add.image(enemyState.x, enemyState.y, 'player');
     enemyGameObject.setScale(0.35);
     enemies[enemyState.id] = {enemyState, enemyGameObject}
+}
+
+function createStateOfWorld(stateOfWorld) {
+    console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
+    const {players: enemies} = stateOfWorld;
+
+    Object.values(enemies).forEach(enemy => spawnEnemy(enemy))
 }
 
 main();
