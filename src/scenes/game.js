@@ -136,13 +136,8 @@ export default class Game extends Phaser.Scene {
     }
 
     setupSocket(socket) {
-<<<<<<< HEAD
         const self = this
         socket.removeAllListeners()
-=======
-        const self = this;
-
->>>>>>> 728f859c6b9102ca5791947fa674db6632b98dc6
         socket.on('connect', () => {
             console.log('socket connected')
         });
