@@ -32,6 +32,18 @@ function setupSocket(sock){
     sock.on('connect',() => {
         console.log('socket connected')
     })
+
+    sock.on('sow',(msg) => {
+        console.log('Got SOW: ',msg)
+    })
+
+    sock.on('new_player',(msg) => {
+        console.log('New Player Joined: ',msg)
+    })
+
+    sock.on('player_left',(msg) => {
+        console.log('Player Left: ',msg)
+    })
 }
 
 function preload ()
