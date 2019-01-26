@@ -8,8 +8,8 @@ let socket = null;
 function main() {
     const config = {
         type: Phaser.AUTO,
-        width: 800,
-        height: 600,
+        width: 1024,
+        height: 660,
         physics: {
             default: 'arcade',
             arcade: {
