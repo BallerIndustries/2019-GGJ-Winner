@@ -77,9 +77,9 @@ export default class Game extends Phaser.Scene {
         }
     }
     
-    createPlayer(playerState) {
+    spawnPlayer(playerState) {
         this.playerSprite = this.add.image(playerState.x, playerState.y, 'player');
-        this.playerSprite.setScale(0.35)
+        this.playerSprite.setScale(0.17)
     }
 
     removeEnemy(enemyId) {
@@ -101,7 +101,7 @@ export default class Game extends Phaser.Scene {
 
     spawnEnemy(enemyState) {
         const enemyGameObject = this.add.image(enemyState.x, enemyState.y, 'player');
-        enemyGameObject.setScale(0.35);
+        enemyGameObject.setScale(0.17);
         this.enemies[enemyState.id] = {enemyState, enemyGameObject}
     }
     
@@ -129,25 +129,25 @@ export default class Game extends Phaser.Scene {
     }
 
     setupSocket(socket) {
-        const self = this
+        const self = this;
 
         socket.on('connect', () => {
             console.log('socket connected')
         });
     
         socket.on('sow',(stateOfWorld) => {
-            console.log('Got SOW: ',stateOfWorld)
-            self.createStateOfWorld(stateOfWorld)
+            console.log('Got SOW: ',stateOfWorld);
+            self.createStateOfWorld(stateOfWorld);
         });
     
         socket.on('player_state', function(playerState) {
             console.log(`Got your_position = ${JSON.stringify(playerState)}`);
-            self.createPlayer(playerState);
+            self.spawnPlayer(playerState);
         });
     
         socket.on('new_player',(enemyState) => {
             console.log('New Player Joined: ', enemyState);
-            self.spawnEnemy(enemyState)
+            self.spawnEnemy(enemyState);
         });
     
         socket.on('player_left',(enemyState) => {
@@ -155,13 +155,9 @@ export default class Game extends Phaser.Scene {
             self.removeEnemy(enemyState.id);
         });
     
-        socket.on('move_player',(enemyMoveState) => {
-            // console.log('Enemy player moved: ', enemyMoveState);
-            for(let eState of enemyMoveState){
-                // TODO: check for player id here
-                self.moveEnemy(eState)
-            }
-        })
+        socket.on('move_player',(enemyMoveStates) => {
+            enemyMoveStates.forEach(enemyMoveState => self.moveEnemy(enemyMoveState));
+        });
     }
 }
 
