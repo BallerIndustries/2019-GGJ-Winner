@@ -19,7 +19,7 @@ module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
 module.exports.movePlayer = movePlayer;
 module.exports.removePlayer = removePlayer;
-module.exports.playerState = playerState;
+module.exports.getPlayerState = getPlayerState;
 
 function addPlayer(playerID) {
     const x = getRandomInt(0, GRID_WIDTH);
@@ -44,12 +44,27 @@ function movePlayer(playerID, x, y) {
     gameState[playerID].y = y
 }
 
+function getPlayerState(playerID) {
+    return playerState[playerID]
+}
+
 function getSOW() {
     return {
         gameState: gameState,
         players: playerState,
         chairs: chairState
     }
+}
+
+function claimChair(playerID,chairID){
+    chair = chairState[chairID]
+    if(chair.taken){
+        return false
+    }
+    chairState[chairID].taken = true
+    chairState[chairID].player = playerID
+    console.log(`${playerID} took chair ${chairID}`)
+    return true
 }
 
 function clearChairs() {
@@ -62,7 +77,8 @@ function addChairs(n){
             id: i,
             x: getRandomInt(0, GRID_WIDTH),
             y: getRandomInt(0, GRID_HEIGHT),
-            taken: false
+            taken: false,
+            player: null
         })
     }
 }
@@ -95,7 +111,7 @@ function onStateChange(from, to, func) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
-+
+
 function stateChangeKey(from, to) {
     return from + '->' + to
 }
