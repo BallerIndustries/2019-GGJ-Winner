@@ -27,34 +27,32 @@ function main() {
 
 function setupSocket(socket) {
     socket.on('connect', () => {
-        // console.log('socket connected')
+        console.log('socket connected')
     });
 
     socket.on('sow',(stateOfWorld) => {
-        // console.log('Got SOW: ',stateOfWorld)
+        console.log('Got SOW: ',stateOfWorld)
         createStateOfWorld(stateOfWorld)
     });
 
     socket.on('your_position', function(playerState) {
-        // console.log(`Got your_position = ${JSON.stringify(playerState)}`);
+        console.log(`Got your_position = ${JSON.stringify(playerState)}`);
         createPlayer(playerState);
     });
 
     socket.on('new_player',(enemyState) => {
-        // console.log('New Player Joined: ', enemyState);
+        console.log('New Player Joined: ', enemyState);
         spawnEnemy(enemyState)
     });
 
     socket.on('player_left',(enemyState) => {
-        // console.log('Player Left: ', enemyState);
+        console.log('Player Left: ', enemyState);
         removeEnemy(enemyState.id);
     });
 
     socket.on('move_player',(enemyMoveState) => {
-        // console.log('Enemy player moved: ', enemyMoveState);
+        console.log('Enemy player moved: ', enemyMoveState);
         moveEnemy(enemyMoveState)
-
-        // removeEnemy(enemyState.id);
     });
 
 
@@ -108,7 +106,7 @@ function create() {
     game = this;
     game.cameras.main.setBackgroundColor('#CCCCCC');
 
-    // console.log('created game');
+    console.log('created game');
     socket = io();
     setupSocket(socket);
 }
@@ -125,7 +123,7 @@ function removeEnemy(enemyId) {
     const enemy = enemies[enemyId];
 
     if (enemy === undefined) {
-        // console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
+        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
         return
     }
 
@@ -145,18 +143,18 @@ function spawnEnemy(enemyState) {
 }
 
 function createStateOfWorld(stateOfWorld) {
-    // console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
+    console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
     const {players: enemies} = stateOfWorld;
     Object.values(enemies).forEach(enemy => spawnEnemy(enemy))
 }
 
 function moveEnemy(enemyMoveState) {
     const {id: enemyId, x, y} = enemyMoveState;
-    // console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
+    console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
     const enemy = enemies[enemyId];
 
     if (enemy === undefined) {
-        // console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`);
+        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`);
         return
     }
 
