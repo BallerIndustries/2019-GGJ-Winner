@@ -25,13 +25,14 @@ module.exports.movePlayer = movePlayer;
 module.exports.removePlayer = removePlayer;
 module.exports.getPlayerState = getPlayerState;
 
-function addPlayer(playerID) {
+function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
     const y = getRandomInt(0, GRID_HEIGHT);
     const player = {
         id: playerID, 
         x, 
         y,
+        name,
         alive: gameState === GAME_STATES.LOBBY
     };
 
@@ -70,6 +71,7 @@ function getSOW(playerID) {
         return key !== playerID
     })
     return {
+        playerID: playerID,
         gameState: gameState,
         players: enemies,
         chairs: chairState
@@ -143,10 +145,16 @@ function startGame(){
 
 // State handlers
 
-onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR,(from,to) => {
+onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,to) => {
     let wait_time = getRandomInt(MIN_PRECHAIR_WAIT,MAX_PRECHAIR_WAIT)
     console.log(`Waiting for ${wait_time} seconds for chairs`)
+    setTimeout(() => {
+        changeState(GAME_STATES.CHAIR)
+    },1000*wait_time)
+})
 
+onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
+    console.log(`Waiting ${CHAIR_ROUND_WAIT} in chair round`)
 })
 
 

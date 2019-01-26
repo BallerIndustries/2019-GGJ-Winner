@@ -16,24 +16,26 @@ io.on('connection', (socket) => {
   const playerId = socket.id
 
   console.log(`a user connected playerId = ${playerId}`);
-  game.addPlayer(playerId)
-
-  // Send current player the state of the world
-  socket.emit('sow',game.getSOW(playerId));
-  socket.emit('your_position', game.getPlayerState(playerId));
-
-  // Send everyone else that a new player has joined
-  socket.broadcast.emit('new_player', game.getPlayerState(playerId))
-
+  
   // Event handlers
   socket.on('disconnect', (reason) => {
     game.removePlayer(playerId)
     socket.broadcast.emit('player_left',{id: playerId})
     console.log(`a user has disconnected. playerId = ${playerId} reason = ${JSON.stringify(reason)}`)
   });
-
+  
   socket.on('move_player',(msg) => {
     moveUpdates[playerId] = {id:playerId, x:msg.x, y: msg.y}
+  })
+  
+  socket.on('login',msg => {
+    console.log(`${playerId} logging in with name: ${msg.name}`)
+    game.addPlayer(playerId,msg.name)
+    // Send current player the state of the world
+    socket.emit('sow',game.getSOW(playerId));
+    socket.emit('player_state', game.getPlayerState(playerId));
+    // Send everyone else that a new player has joined
+    socket.broadcast.emit('new_player', game.getPlayerState(playerId))
   })
 });
 
