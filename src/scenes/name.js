@@ -6,6 +6,7 @@ export default class Name extends Phaser.Scene {
         super({ key: 'Name' });
         this.name = []
         this.nameText = null
+        this.game_state_label = null
     }
 
     preload (){
@@ -13,6 +14,11 @@ export default class Name extends Phaser.Scene {
 
     create (){
         // Setup socket
+        let self = this
+        socket.on('game_state',function(msg){
+            self.game_state_label = msg.state
+        })
+        socket.emit('game_state')
         this.cameras.main.setBackgroundColor('#CCCCCC');
 
         var style = { font: "bold 40px Arial", fill: "#333", boundsAlignH: "center", boundsAlignV: "middle" };
@@ -27,8 +33,15 @@ export default class Name extends Phaser.Scene {
         this.input.keyboard.on('keydown', function(e){
             let key = e.key
             if(key === 'Enter' && this.name.length > 0){
-                console.log('logging in')
-                this.scene.start('Game',{name: this.name.join('')});
+                let dest = null
+                console.log(this.name)
+                if(this.game_state_label === 'LOBBY'){
+                    dest = 'Lobby'
+                }else{
+                    dest = 'Game'
+                }
+                console.log('going to: ',dest)
+                this.scene.start(dest,{name: this.name.join('')});
             }
             if(this.name.length >= 10){
                 return

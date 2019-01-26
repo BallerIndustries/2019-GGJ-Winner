@@ -9,11 +9,6 @@ export default class Game extends Phaser.Scene {
         this.playerSprite = null
     }
 
-    init(data){
-        this.name = data.name
-        console.log('init',this.name)
-    }
-
     preload ()
     {
         this.load.setBaseURL('/');
@@ -28,7 +23,8 @@ export default class Game extends Phaser.Scene {
         console.log('created game');
         this.setupSocket(socket);
         console.log('socket set up')
-        socket.emit('login',{name: this.name})
+        socket.emit('send_sow')
+        
     }
 
     update()
@@ -131,6 +127,7 @@ export default class Game extends Phaser.Scene {
 
     setupSocket(socket) {
         const self = this
+        socket.removeAllListeners()
         socket.on('connect', () => {
             console.log('socket connected')
         });

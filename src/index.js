@@ -1,6 +1,7 @@
 
 import Name from './scenes/name'
 import Game from './scenes/game'
+import Lobby from './scenes/lobby'
 
 function main() {
     const config = {
@@ -13,7 +14,7 @@ function main() {
                 gravity: {y: 200}
             }
         },
-        scene: [Name, Game]
+        scene: [Name, Lobby, Game]
     };
 
     new Phaser.Game(config);

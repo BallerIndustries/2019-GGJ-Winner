@@ -1,6 +1,7 @@
 const _ = require('lodash')
 
 const GAME_STATES = {
+    LOBBY: 'LOBBY',
     PRECHAIR: 'PRECHAIR',
     CHAIR: 'CHAIR',
     CHAIRWINNER: 'CHAIRWINNER',
@@ -20,9 +21,11 @@ const CHAIR_ROUND_WAIT = 15
 
 module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
+module.exports.getGameState = getGameState;
 module.exports.movePlayer = movePlayer;
 module.exports.removePlayer = removePlayer;
 module.exports.getPlayerState = getPlayerState;
+module.exports.onStateChange = onStateChange;
 
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
@@ -53,7 +56,6 @@ function movePlayer(playerID, x, y, angle) {
 
     if (player === undefined) {
         console.log(`Unable to find player with playerID = ${playerID}`)
-        console.log(``)
         return;
     }
 
@@ -66,14 +68,18 @@ function getPlayerState(playerID) {
     return playerState[playerID]
 }
 
+function getGameState(){
+    return gameState
+}
+
 function getSOW(playerID) {
-    const enemies = _.pickBy(playerState, (val,key) => {
-        return key !== playerID
-    })
+    // const enemies = _.pickBy(playerState, (val,key) => {
+    //     return key !== playerID
+    // })
     return {
         playerID: playerID,
         gameState: gameState,
-        players: enemies,
+        players: playerState,
         chairs: chairState
     }
 }
@@ -119,10 +125,6 @@ function changeState(to) {
             f(prevState, to)
         }
     }
-}
-
-function getCurrentState() {
-    return gameState
 }
 
 function onStateChange(from, to, func) {

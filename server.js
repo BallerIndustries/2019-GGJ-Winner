@@ -24,6 +24,19 @@ io.on('connection', (socket) => {
     console.log(`a user has disconnected. playerId = ${playerId} reason = ${JSON.stringify(reason)}`)
   });
 
+  socket.on('game_state',() => {
+    console.log('returning game state: ',game.getGameState())
+    socket.emit('game_state',{state:game.getGameState()})
+  })
+
+  socket.on('send_sow',() => {
+    socket.emit('sow',game.getSOW(playerId));
+  })
+
+  socket.on('start_game',() => {
+    game.changeState('PRECHAIR')
+  })
+
   socket.on('move_player',(playerState) => {
     moveUpdates[playerId] = {id:playerId, x:playerState.x, y: playerState.y, angle: playerState.angle}
   })
@@ -54,6 +67,13 @@ function tick(){
   moveUpdates = {}
   io.emit('move_player',upd)
 }
+
+game.onStateChange('LOBBY','PRECHAIR',(from,to) => {
+  io.emit('state_change',{
+    from: from,
+    to: to
+  })
+})
 
 setInterval(tick,Math.floor(1000/TICK_RATE))
 
