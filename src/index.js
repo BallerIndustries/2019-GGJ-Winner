@@ -3,8 +3,6 @@ import io from 'socket.io-client';
 
 let cursors;
 let socket;
-let x = 0;
-let y = 0;
 
 function main() {
     const config = {
