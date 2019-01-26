@@ -7,7 +7,7 @@ const port = process.env.PORT || 9876;
 
 const game = require('./game.js')
 
-const TICK_RATE = 60
+const TICK_RATE = 30
 let moveUpdates = {}
 
 app.use(express.static(__dirname + '/dist'));
