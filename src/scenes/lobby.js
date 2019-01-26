@@ -7,16 +7,29 @@ export default class Name extends Phaser.Scene {
         this.players = {}
         this.player_id = null
         this.names = []
+        this.enterKey = null
     }
 
     init(data){
         this.name = data.name
     }
 
+    update() {
+        if (this.enterKey === null) {
+            return
+        }
+
+        if (this.enterKey.isDown) {
+            this.enterGameState()
+        }
+    }
+
     preload (){
     }
 
     create (){
+        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
         let self = this
         // Setup socket
         socket.removeAllListeners()
@@ -43,10 +56,7 @@ export default class Name extends Phaser.Scene {
         style = { font: "bold 40px Arial", fill: "#f44141", boundsAlignH: "center", boundsAlignV: "middle", backgroundColor: '#42b0f4' }
         let startbutton = this.add.text(860, 10, " START ", style);
         startbutton.setInteractive().on('pointerdown', () => {
-            this.scene.start('Game',{
-                name: this.name,
-                player_id: this.player_id
-            });
+            this.enterGameState();
         });
 
         socket.emit('login',{name: this.name})
@@ -67,6 +77,13 @@ export default class Name extends Phaser.Scene {
             offset += 30
             this.names.push(t)
         }
+    }
+
+    enterGameState() {
+        this.scene.start('Game',{
+            name: this.name,
+            player_id: this.player_id
+        });
     }
 
 }
