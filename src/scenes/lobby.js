@@ -34,6 +34,14 @@ export default class Name extends Phaser.Scene {
             delete self.players[msg.id]
             self.updatePlayers()
         })
+        socket.on('state_change',function(msg){
+            if(msg.from === 'LOBBY' && msg.to === 'PRECHAIR'){
+                self.scene.start('Game',{
+                    name: self.name,
+                    player_id: self.player_id
+                });
+            }
+        })
         this.cameras.main.setBackgroundColor('#CCCCCC');
 
         var style = { font: "bold 40px Arial", fill: "#333", boundsAlignH: "center", boundsAlignV: "middle" }
@@ -43,10 +51,7 @@ export default class Name extends Phaser.Scene {
         style = { font: "bold 40px Arial", fill: "#f44141", boundsAlignH: "center", boundsAlignV: "middle", backgroundColor: '#42b0f4' }
         let startbutton = this.add.text(860, 10, " START ", style);
         startbutton.setInteractive().on('pointerdown', () => {
-            this.scene.start('Game',{
-                name: this.name,
-                player_id: this.player_id
-            });
+            socket.emit('start_game')
         });
 
         socket.emit('login',{name: this.name})
@@ -54,7 +59,6 @@ export default class Name extends Phaser.Scene {
     }
 
     updatePlayers(){
-        console.log('updating',this.players)
         var style = { font: "bold 24px Arial", fill: "#444", boundsAlignH: "center", boundsAlignV: "middle" }
         // clear the names
         for(let n of this.names){

@@ -26,6 +26,7 @@ module.exports.movePlayer = movePlayer;
 module.exports.removePlayer = removePlayer;
 module.exports.getPlayerState = getPlayerState;
 module.exports.onStateChange = onStateChange;
+module.exports.changeState = changeState;
 
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);

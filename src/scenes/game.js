@@ -8,6 +8,13 @@ export default class Game extends Phaser.Scene {
         this.enemies = {};
         this.playerSprite = null;
         this.playerContainer = null;
+        this.player_id = null
+        this.name = null
+    }
+
+    init(data){
+        this.name = data.name
+        this.player_id = data.player_id
     }
 
     preload ()
@@ -115,7 +122,11 @@ export default class Game extends Phaser.Scene {
     createStateOfWorld(stateOfWorld) {
         console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
         const {players: enemies} = stateOfWorld;
-        Object.values(enemies).forEach(enemy => this.spawnEnemy(enemy))
+        Object.values(enemies).forEach(enemy => {
+            if(enemy.id !== this.player_id){
+                this.spawnEnemy(enemy)
+            }
+        })
     }
     
     moveEnemy(enemyMoveState) {
