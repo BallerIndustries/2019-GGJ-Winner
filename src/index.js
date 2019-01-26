@@ -1,4 +1,3 @@
-
 import Name from './scenes/name'
 import Game from './scenes/game'
 import Lobby from './scenes/lobby'
@@ -11,7 +10,7 @@ function main() {
         physics: {
             default: 'arcade',
             arcade: {
-                gravity: {y: 200}
+                gravity: {y: 0}
             }
         },
         scene: [Name, Lobby, Game]

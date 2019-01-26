@@ -29,6 +29,7 @@ export default class Game extends Phaser.Scene {
 
     create ()
     {
+        this.physics.world.setBounds(0, 0, 1024, 660);
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
         console.log('created game');
@@ -68,18 +69,19 @@ export default class Game extends Phaser.Scene {
 
         // const r = 5;
         const radians = degreesToRadians(this.playerSprite.angle - 90);
-        const x = (6 * Math.sin(radians));
-        const y = (6 * Math.cos(radians));
+        const x = (200 * Math.sin(radians));
+        const y = (200 * Math.cos(radians));
 
         if (this.cursors.up.isDown) {
-            this.playerContainer.x -= x;
-            this.playerContainer.y += y;
+            this.playerContainer.body.setVelocity(-x, y);
             hasMoved = true;
         }
         else if (this.cursors.down.isDown) {
-            this.playerContainer.x += x;
-            this.playerContainer.y -= y;
+            this.playerContainer.body.setVelocity(x, -y);
             hasMoved = true;
+        }
+        else {
+            this.playerContainer.body.setVelocity(0, 0);
         }
 
         if (hasMoved) {
@@ -104,6 +106,13 @@ export default class Game extends Phaser.Scene {
 
         const playerNameGameObject = this.add.text(-20, -40, name, {fontSize: '14px', fill: '#000000'});
         playerContainer.add([playerSprite, playerNameGameObject]);
+
+
+        // Add a collider
+        playerContainer.setSize(playerSprite.width, playerSprite.height);
+        this.physics.world.enable(playerContainer);
+        this.playerContainer.setBoundsCollision()
+
         return {playerContainer, playerSprite};
     }
 
