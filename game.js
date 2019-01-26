@@ -47,8 +47,16 @@ function removePlayer(playerID) {
 }
 
 function movePlayer(playerID, x, y) {
-    gameState[playerID].x = x
-    gameState[playerID].y = y
+    const player = playerState[playerID]
+
+    if (player === undefined) {
+        console.log(`Unable to find player with playerID = ${playerID}`)
+        console.log(``)
+        return;
+    }
+
+    playerState[playerID].x = x
+    playerState[playerID].y = y
 }
 
 function getPlayerState(playerID) {

@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-let player = null;
+let playerSprite = null;
 let cursors = null;
 let socket = null;
 
@@ -49,6 +49,15 @@ function setupSocket(socket) {
         console.log('Player Left: ', enemyState);
         removeEnemy(enemyState.id);
     });
+
+    socket.on('move_player',(enemyMoveState) => {
+        console.log('Enemy player moved: ', enemyMoveState);
+        moveEnemy(enemyMoveState)
+
+        // removeEnemy(enemyState.id);
+    });
+
+
 }
 
 function preload() {
@@ -59,26 +68,33 @@ function preload() {
 }
 
 function update() {
-    if (player === null) {
+    if (playerSprite === null) {
         return
     }
 
     if (cursors.left.isDown) {
-        player.x -= 10;
+        playerSprite.x -= 10;
     }
     else if (cursors.right.isDown) {
-        player.x += 10;
+        playerSprite.x += 10;
     }
 
     if (cursors.up.isDown) {
-        player.y -= 10;
+        playerSprite.y -= 10;
     }
     else if (cursors.down.isDown) {
-        player.y += 10;
+        playerSprite.y += 10;
     }
+
+    const {x, y} = playerSprite;
+    emitMove(x, y)
 }
 
 let game = null;
+
+function emitMove(x, y) {
+    socket.emit('move_player', {x, y})
+}
 
 function create() {
     game = this;
@@ -91,8 +107,8 @@ function create() {
 
 function createPlayer(playerState) {
     //debugger
-    player = game.add.image(playerState.x, playerState.y, 'player');
-    player.setScale(0.35)
+    playerSprite = game.add.image(playerState.x, playerState.y, 'player');
+    playerSprite.setScale(0.35)
 }
 
 const enemies = {};
@@ -124,6 +140,22 @@ function createStateOfWorld(stateOfWorld) {
     console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
     const {players: enemies} = stateOfWorld;
     Object.values(enemies).forEach(enemy => spawnEnemy(enemy))
+}
+
+function moveEnemy(enemyMoveState) {
+    const {id: enemyId, x, y} = enemyMoveState;
+    console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
+    const enemy = enemies[enemyId];
+
+    if (enemy === undefined) {
+        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`);
+        return
+    }
+
+    const {enemyState, enemyGameObject} = enemy;
+
+    enemyGameObject.x = x;
+    enemyGameObject.y = y;
 }
 
 main();
