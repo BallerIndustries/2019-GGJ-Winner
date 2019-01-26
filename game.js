@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 const GAME_STATES = {
     LOBBY: 'LOBBY',
     PRECHAIR: 'PRECHAIR',
@@ -24,9 +26,14 @@ module.exports.getPlayerState = getPlayerState;
 function addPlayer(playerID) {
     const x = getRandomInt(0, GRID_WIDTH);
     const y = getRandomInt(0, GRID_HEIGHT);
-    const position = {id: playerID, x, y};
+    const player = {
+        id: playerID, 
+        x, 
+        y,
+        alive: gameState === GAME_STATES.LOBBY
+    };
 
-    playerState[playerID] = position;
+    playerState[playerID] = player;
     console.log(`player placed at (${x}, ${y})`);
 
     console.log(`playerState = ${JSON.stringify(playerState)}`)
@@ -48,10 +55,13 @@ function getPlayerState(playerID) {
     return playerState[playerID]
 }
 
-function getSOW() {
+function getSOW(playerID) {
+    const enemies = _.pickBy(playerState, (val,key) => {
+        key !== playerID
+    })
     return {
         gameState: gameState,
-        players: playerState,
+        players: enemies,
         chairs: chairState
     }
 }
@@ -104,6 +114,16 @@ function getCurrentState() {
 function onStateChange(from, to, func) {
     stateChangeMap[stateChangeKey(from, to)] = func
 }
+
+function startGame(){
+    changeState(GAME_STATES.PRECHAIR)
+}
+
+// State handlers
+
+onStateChange(GAME_STATES.LOBBY,GAME_STATES.PRECHAIR,(from,to) => {
+
+})
 
 // ===== MISC =====
 
