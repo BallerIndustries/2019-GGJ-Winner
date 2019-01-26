@@ -15,8 +15,8 @@ let gameState = GAME_STATES.LOBBY
 
 const GRID_WIDTH = 1024
 const GRID_HEIGHT = 660
-const MIN_PRECHAIR_WAIT = 5
-const MAX_PRECHAIR_WAIT = 15
+const MIN_PRECHAIR_WAIT = 1
+const MAX_PRECHAIR_WAIT = 2
 const CHAIR_ROUND_WAIT = 15
 
 module.exports.addPlayer = addPlayer;
@@ -27,6 +27,7 @@ module.exports.removePlayer = removePlayer;
 module.exports.getPlayerState = getPlayerState;
 module.exports.onStateChange = onStateChange;
 module.exports.changeState = changeState;
+module.exports.getChairs = getChairs;
 
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
@@ -115,6 +116,10 @@ function addChairs(n){
     }
 }
 
+function getChairs() {
+    return chairState
+}
+
 function numPlayers(){
     return playerState.keys.length
 }
@@ -168,19 +173,20 @@ onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,
     let wait_time = getRandomInt(MIN_PRECHAIR_WAIT,MAX_PRECHAIR_WAIT)
     console.log(`Waiting for ${wait_time} seconds for chairs`)
     setTimeout(() => {
+        // genreate chairs
+        let alive = numPlayersAlive()
+        if(alive <= 1){
+            changeState(GAME_STATES.FINALWINNER)
+            return
+        }
+        let numchairs = alive - 1
+        addChairs(numchairs)
         changeState(GAME_STATES.CHAIR)
     },1000*wait_time)
 })
 
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
     console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
-    // genreate chairs
-    let alive = numPlayersAlive()
-    if(alive <= 1){
-        changeState(GAME_STATES.FINALWINNER)
-        return
-    }
-    let numchairs = alive - 1
 })
 
 

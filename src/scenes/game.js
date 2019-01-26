@@ -6,6 +6,7 @@ export default class Game extends Phaser.Scene {
     {
         super({ key: 'Game' });
         this.enemies = {};
+        this.chairs = {}
         this.playerSprite = null;
         this.playerContainer = null;
         this.player_id = null
@@ -23,6 +24,7 @@ export default class Game extends Phaser.Scene {
         this.load.setBaseURL('/');
         this.load.image('sky', 'assets/space3.png');
         this.load.image('player', 'assets/player/survivor-idle_handgun_0.png')
+        this.load.image('chair', 'assets/chair.png')
     }
 
     create ()
@@ -123,6 +125,13 @@ export default class Game extends Phaser.Scene {
         enemyGameObject.setScale(0.17);
         this.enemies[enemyState.id] = {enemyState, enemyGameObject}
     }
+
+    spawnChair(chair) {
+        const chairGameObject = this.add.image(chair.x, chair.y, 'chair');
+        chairGameObject.setScale(0.4);
+        chairGameObject.depth = -1
+        this.chairs[chair.id] = {chair, chairGameObject}
+    }
     
     createStateOfWorld(stateOfWorld) {
         console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
@@ -186,6 +195,11 @@ export default class Game extends Phaser.Scene {
             const {from,to} = msg
             if(from === 'PRECHAIR' && to === 'CHAIR'){
                 console.log('Changed to CHAIR state')
+                let chairs = msg.chairs
+                for(let c of chairs){
+                    self.spawnChair(c)
+                }
+                return
             }
         })
     }

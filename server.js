@@ -77,6 +77,15 @@ game.onStateChange('LOBBY','PRECHAIR',(from,to) => {
   })
 })
 
+game.onStateChange('PRECHAIR','CHAIR',(from,to) => {
+  let chairs = game.getChairs()
+  io.emit('state_change',{
+    from: from,
+    to: to,
+    chairs: chairs
+  })
+})
+
 setInterval(tick,Math.floor(1000/TICK_RATE))
 
 server.listen(port, () => console.log(`Musical chairs listening on ${port}`));
