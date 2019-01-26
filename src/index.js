@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-let player = null;
+let playerSprite = null;
 let cursors = null;
 let socket = null;
 
@@ -27,28 +27,37 @@ function main() {
 
 function setupSocket(socket) {
     socket.on('connect', () => {
-        console.log('socket connected')
+        // console.log('socket connected')
     });
 
     socket.on('sow',(stateOfWorld) => {
-        console.log('Got SOW: ',stateOfWorld)
+        // console.log('Got SOW: ',stateOfWorld)
         createStateOfWorld(stateOfWorld)
     });
 
     socket.on('your_position', function(playerState) {
-        console.log(`Got your_position = ${JSON.stringify(playerState)}`);
+        // console.log(`Got your_position = ${JSON.stringify(playerState)}`);
         createPlayer(playerState);
     });
 
     socket.on('new_player',(enemyState) => {
-        console.log('New Player Joined: ', enemyState);
+        // console.log('New Player Joined: ', enemyState);
         spawnEnemy(enemyState)
     });
 
     socket.on('player_left',(enemyState) => {
-        console.log('Player Left: ', enemyState);
+        // console.log('Player Left: ', enemyState);
         removeEnemy(enemyState.id);
     });
+
+    socket.on('move_player',(enemyMoveState) => {
+        // console.log('Enemy player moved: ', enemyMoveState);
+        moveEnemy(enemyMoveState)
+
+        // removeEnemy(enemyState.id);
+    });
+
+
 }
 
 function preload() {
@@ -59,40 +68,55 @@ function preload() {
 }
 
 function update() {
-    if (player === null) {
+    if (playerSprite === null) {
         return
     }
 
+    let hasMoved = false;
+
     if (cursors.left.isDown) {
-        player.x -= 10;
+        playerSprite.x -= 10;
+        hasMoved = true;
     }
     else if (cursors.right.isDown) {
-        player.x += 10;
+        playerSprite.x += 10;
+        hasMoved = true;
     }
 
     if (cursors.up.isDown) {
-        player.y -= 10;
+        playerSprite.y -= 10;
+        hasMoved = true;
     }
     else if (cursors.down.isDown) {
-        player.y += 10;
+        playerSprite.y += 10;
+        hasMoved = true;
+    }
+
+    if (hasMoved) {
+        const {x, y} = playerSprite;
+        emitMove(x, y)
     }
 }
 
 let game = null;
 
+function emitMove(x, y) {
+    socket.emit('move_player', {x, y})
+}
+
 function create() {
     game = this;
     game.cameras.main.setBackgroundColor('#CCCCCC');
 
-    console.log('created game');
+    // console.log('created game');
     socket = io();
     setupSocket(socket);
 }
 
 function createPlayer(playerState) {
     //debugger
-    player = game.add.image(playerState.x, playerState.y, 'player');
-    player.setScale(0.35)
+    playerSprite = game.add.image(playerState.x, playerState.y, 'player');
+    playerSprite.setScale(0.35)
 }
 
 const enemies = {};
@@ -101,7 +125,7 @@ function removeEnemy(enemyId) {
     const enemy = enemies[enemyId];
 
     if (enemy === undefined) {
-        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
+        // console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
         return
     }
 
@@ -121,9 +145,25 @@ function spawnEnemy(enemyState) {
 }
 
 function createStateOfWorld(stateOfWorld) {
-    console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
+    // console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
     const {players: enemies} = stateOfWorld;
     Object.values(enemies).forEach(enemy => spawnEnemy(enemy))
+}
+
+function moveEnemy(enemyMoveState) {
+    const {id: enemyId, x, y} = enemyMoveState;
+    // console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
+    const enemy = enemies[enemyId];
+
+    if (enemy === undefined) {
+        // console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`);
+        return
+    }
+
+    const {enemyState, enemyGameObject} = enemy;
+
+    enemyGameObject.x = x;
+    enemyGameObject.y = y;
 }
 
 main();
