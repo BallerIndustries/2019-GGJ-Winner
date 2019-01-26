@@ -29,8 +29,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('move_player',(msg) => {
-    game.movePlayer(msg.id,msg.x,msg.y)
-    socket.broadcast.emit('move_player',msg)
+    game.movePlayer(playerId,msg.x,msg.y)
+    socket.broadcast.emit('move_player',{id: playerId, x: msg.x, y: msg.y})
   })
 });
 
