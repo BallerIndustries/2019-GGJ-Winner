@@ -76,20 +76,20 @@ function update() {
     let hasMoved = false;
 
     if (cursors.left.isDown) {
-        playerSprite.x -= 10;
+        playerSprite.x -= 6;
         hasMoved = true;
     }
     else if (cursors.right.isDown) {
-        playerSprite.x += 10;
+        playerSprite.x += 6;
         hasMoved = true;
     }
 
     if (cursors.up.isDown) {
-        playerSprite.y -= 10;
+        playerSprite.y -= 6;
         hasMoved = true;
     }
     else if (cursors.down.isDown) {
-        playerSprite.y += 10;
+        playerSprite.y += 6;
         hasMoved = true;
     }
 
