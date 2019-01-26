@@ -7,7 +7,7 @@ const port = process.env.PORT || 9876;
 
 const game = require('./game.js')
 
-const TICK_RATE = 60
+const TICK_RATE = 30
 let moveUpdates = {}
 
 app.use(express.static(__dirname + '/dist'));
@@ -38,6 +38,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('move_player',(playerState) => {
+    console.log(`playerState = ${JSON.stringify(playerState)}`);
     moveUpdates[playerId] = {id:playerId, x:playerState.x, y: playerState.y, angle: playerState.angle}
   })
   
@@ -65,7 +66,7 @@ function tick(){
   })
 
   moveUpdates = {}
-  io.emit('move_player',upd)
+  io.emit('move_player', upd)
 }
 
 game.onStateChange('LOBBY','PRECHAIR',(from,to) => {

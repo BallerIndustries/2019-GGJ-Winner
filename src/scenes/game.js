@@ -5,8 +5,9 @@ export default class Game extends Phaser.Scene {
     constructor ()
     {
         super({ key: 'Game' });
-        this.enemies = {}
-        this.playerSprite = null
+        this.enemies = {};
+        this.playerSprite = null;
+        this.playerContainer = null;
     }
 
     preload ()
@@ -55,29 +56,37 @@ export default class Game extends Phaser.Scene {
         const radians = degreesToRadians(this.playerSprite.angle - 90);
         const x = (6 * Math.sin(radians));
         const y = (6 * Math.cos(radians));
-        console.log(`x = ${x} y = ${y}`);
 
         if (this.cursors.up.isDown) {
-            this.playerSprite.x -= x;
-            this.playerSprite.y += y;
+            this.playerContainer.x -= x;
+            this.playerContainer.y += y;
             hasMoved = true;
         }
         else if (this.cursors.down.isDown) {
-            this.playerSprite.x += x;
-            this.playerSprite.y -= y;
+            this.playerContainer.x += x;
+            this.playerContainer.y -= y;
             hasMoved = true;
         }
 
         if (hasMoved) {
-            const {x, y, angle} = this.playerSprite;
+            const {x, y} = this.playerContainer;
+            const angle = this.playerSprite.angle;
             emitMove(x, y, angle)
         }
     }
     
-    createPlayer(playerState) {
-        //debugger
-        this.playerSprite = this.add.image(playerState.x, playerState.y, 'player');
-        this.playerSprite.setScale(0.35)
+    spawnPlayer(playerState) {
+        const {x, y, name} = playerState;
+
+        const playerContainer = this.add.container(x, y);
+        const playerSprite = this.add.image(0, 0, 'player');
+        playerSprite.setScale(0.17);
+
+        const playerNameGameObject = this.add.text(-20, -40, name,{ fontSize: '14px', fill: '#000000' });
+        playerContainer.add([playerSprite, playerNameGameObject]);
+
+        this.playerContainer = playerContainer;
+        this.playerSprite = playerSprite;
     }
 
     removeEnemy(enemyId) {
@@ -99,7 +108,7 @@ export default class Game extends Phaser.Scene {
 
     spawnEnemy(enemyState) {
         const enemyGameObject = this.add.image(enemyState.x, enemyState.y, 'player');
-        enemyGameObject.setScale(0.35);
+        enemyGameObject.setScale(0.17);
         this.enemies[enemyState.id] = {enemyState, enemyGameObject}
     }
     
@@ -110,7 +119,7 @@ export default class Game extends Phaser.Scene {
     }
     
     moveEnemy(enemyMoveState) {
-        const {id: enemyId, x, y} = enemyMoveState;
+        const {id: enemyId, x, y, angle} = enemyMoveState;
         //console.log(`moveEnemy() enemyId = ${enemyId} x = ${x} y = ${y}`);
         const enemy = this.enemies[enemyId];
     
@@ -123,28 +132,34 @@ export default class Game extends Phaser.Scene {
     
         enemyGameObject.x = x;
         enemyGameObject.y = y;
+        enemyGameObject.angle = angle;
     }
 
     setupSocket(socket) {
+<<<<<<< HEAD
         const self = this
         socket.removeAllListeners()
+=======
+        const self = this;
+
+>>>>>>> 728f859c6b9102ca5791947fa674db6632b98dc6
         socket.on('connect', () => {
             console.log('socket connected')
         });
     
         socket.on('sow',(stateOfWorld) => {
-            console.log('Got SOW: ',stateOfWorld)
-            self.createStateOfWorld(stateOfWorld)
+            console.log('Got SOW: ',stateOfWorld);
+            self.createStateOfWorld(stateOfWorld);
         });
     
         socket.on('player_state', function(playerState) {
             console.log(`Got your_position = ${JSON.stringify(playerState)}`);
-            self.createPlayer(playerState);
+            self.spawnPlayer(playerState);
         });
     
         socket.on('new_player',(enemyState) => {
             console.log('New Player Joined: ', enemyState);
-            self.spawnEnemy(enemyState)
+            self.spawnEnemy(enemyState);
         });
     
         socket.on('player_left',(enemyState) => {
@@ -152,13 +167,9 @@ export default class Game extends Phaser.Scene {
             self.removeEnemy(enemyState.id);
         });
     
-        socket.on('move_player',(enemyMoveState) => {
-            // console.log('Enemy player moved: ', enemyMoveState);
-            for(let estate of enemyMoveState){
-                // TODO: check for player id here
-                self.moveEnemy(estate)
-            }
-        })
+        socket.on('move_player',(enemyMoveStates) => {
+            enemyMoveStates.forEach(enemyMoveState => self.moveEnemy(enemyMoveState));
+        });
     }
 }
 
@@ -166,7 +177,6 @@ function degreesToRadians(degrees) {
     return (degrees / 180.0) * Math.PI
 }
 
-
-function emitMove(x, y) {
-    socket.emit('move_player', {x, y})
+function emitMove(x, y, angle) {
+    socket.emit('move_player', {x, y, angle})
 }
