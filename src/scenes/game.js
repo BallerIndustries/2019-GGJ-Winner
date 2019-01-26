@@ -7,6 +7,7 @@ export default class Game extends Phaser.Scene {
         super({ key: 'Game' });
         this.enemies = {};
         this.chairs = {}
+        this.chairGroup = null
         this.playerSprite = null;
         this.playerContainer = null;
         this.player_id = null
@@ -32,6 +33,7 @@ export default class Game extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, 1024, 660);
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
+        self.chairGroup = this.add.group();
         console.log('created game');
         this.setupSocket(socket);
         console.log('socket set up')
@@ -143,7 +145,7 @@ export default class Game extends Phaser.Scene {
         chairGameObject.setScale(0.4);
         chairGameObject.depth = -1
         this.chairs[chair.id] = {chair, chairGameObject}
-        this.chairCollisionGroup
+        this.chairGroup.add(chairGameObject)
     }
     
     createStateOfWorld(stateOfWorld) {
@@ -209,6 +211,7 @@ export default class Game extends Phaser.Scene {
             if(from === 'PRECHAIR' && to === 'CHAIR'){
                 console.log('Changed to CHAIR state')
                 let chairs = msg.chairs
+                self.chairGroup.clear()
                 for(let c of chairs){
                     self.spawnChair(c)
                 }
