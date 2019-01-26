@@ -113,7 +113,7 @@ function changeState(to) {
     let prevState = gameState
     gameState = to
     if (ck in stateChangeMap) {
-        for(let f in stateChangeMap[ck]){
+        for(let f of stateChangeMap[ck]){
             f(prevState, to)
         }
     }

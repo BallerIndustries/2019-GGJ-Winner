@@ -33,7 +33,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('move_player',(msg) => {
-    moveUpdates[playerId] = msg
+    moveUpdates[playerId] = {id:playerId, x:msg.x, y: msg.y}
   })
 });
 
@@ -41,11 +41,10 @@ function tick(){
   if(0 === Object.keys(moveUpdates).length){
     return
   }
-  console.log(moveUpdates)
-  for(let msg in moveUpdates){
-    game.movePlayer(playerId,msg.x,msg.y)
-  }
-  let upd = _.each(moveUpdates,(v,k)=>{
+  _.each(moveUpdates,(msg,k) => {
+    game.movePlayer(msg.id,msg.x,msg.y)
+  })
+  let upd = _.map(moveUpdates,(v,k)=>{
     return {id: k, x: v.x, y: v.y}
   })
   moveUpdates = {}

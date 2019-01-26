@@ -52,7 +52,10 @@ function setupSocket(socket) {
 
     socket.on('move_player',(enemyMoveState) => {
         // console.log('Enemy player moved: ', enemyMoveState);
-        moveEnemy(enemyMoveState)
+        for(let estate of enemyMoveState){
+            // TODO: check for player id here
+            moveEnemy(estate)
+        }
 
         // removeEnemy(enemyState.id);
     });
