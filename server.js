@@ -51,7 +51,7 @@ io.on('connection', (socket) => {
   })
 
   socket.on('move_player',(playerState) => {
-    console.log(`playerState = ${JSON.stringify(playerState)}`);
+    //console.log(`playerState = ${JSON.stringify(playerState)}`);
     moveUpdates[playerId] = {id:playerId, x:playerState.x, y: playerState.y, angle: playerState.angle}
   })
   

@@ -6,6 +6,7 @@ export default class Game extends Phaser.Scene {
     {
         super({ key: 'Game' });
         this.enemies = {};
+        this.enemyGroup = null
         this.chairs = {}
         this.chairGroup = null
         this.playerSprite = null;
@@ -32,7 +33,8 @@ export default class Game extends Phaser.Scene {
     {
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
-        self.chairGroup = this.add.group();
+        this.chairGroup = this.physics.add.staticGroup();
+        this.enemyGroup = this.physics.add.group();
         console.log('created game');
         this.setupSocket(socket);
         console.log('socket set up')
@@ -111,10 +113,21 @@ export default class Game extends Phaser.Scene {
         const scaledWidth = playerSprite.width * 0.17;
         const scaledHeight = playerSprite.height * 0.17;
 
+
+        const onPlayersCollide = (playerContainer, enemy) => {
+            playerContainer.body.stop()
+            enemy.body.stop()
+
+
+            console.log("collission")
+        }
+
         // Add a collider
         playerContainer.setSize(scaledWidth, scaledHeight);
         this.physics.world.enable(playerContainer);
         playerContainer.body.setCollideWorldBounds(true);
+        this.physics.add.overlap(playerContainer, this.chairGroup);
+        this.physics.add.collider(playerContainer, this.enemyGroup,onPlayersCollide);
 
         return {playerContainer, playerSprite};
     }
@@ -139,6 +152,12 @@ export default class Game extends Phaser.Scene {
     spawnEnemy(enemyState) {
         const {playerContainer: enemyContainer, playerSprite: enemySprite} = this.spawnCharacter(enemyState);
         this.enemies[enemyState.id] = {enemyState, enemyContainer, enemySprite}
+        enemyContainer.body.setMaxVelocity(0,0)
+        enemyContainer.body.setImmovable(true)
+        enemyContainer.body.setBounce(0,0)
+        enemyContainer.body.setMass(1000)
+        //enemyContainer.body.moves = false;
+        this.enemyGroup.add(enemyContainer)
     }
 
     spawnChair(chair) {

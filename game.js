@@ -158,8 +158,10 @@ function isAllChairsTaken(){
 }
 
 function checkWinCondition(){
+    console.log('checking win condition')
     let cond = isAllChairsTaken() || numPlayersAlive() <= 1
     if(cond){
+        console.log('game has been won')
         // make everyone who lost dead
         let losers = getLosers()
         for(let l of losers){
@@ -237,8 +239,9 @@ onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
     console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
     timer = setTimeout(()=> {
+        console.log('Time has run out')
         changeState(GAME_STATES.CHAIRWINNER)
-    },CHAIRWINNER_ROUND_WAIT)
+    },CHAIRWINNER_ROUND_WAIT*1000)
 })
 
 onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
