@@ -72,22 +72,30 @@ function update() {
         return
     }
 
+    let hasMoved = false;
+
     if (cursors.left.isDown) {
         playerSprite.x -= 10;
+        hasMoved = true;
     }
     else if (cursors.right.isDown) {
         playerSprite.x += 10;
+        hasMoved = true;
     }
 
     if (cursors.up.isDown) {
         playerSprite.y -= 10;
+        hasMoved = true;
     }
     else if (cursors.down.isDown) {
         playerSprite.y += 10;
+        hasMoved = true;
     }
 
-    const {x, y} = playerSprite;
-    emitMove(x, y)
+    if (hasMoved) {
+        const {x, y} = playerSprite;
+        emitMove(x, y)
+    }
 }
 
 let game = null;
