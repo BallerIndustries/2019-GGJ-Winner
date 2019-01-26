@@ -1,7 +1,6 @@
 const _ = require('lodash')
 
 const GAME_STATES = {
-    LOBBY: 'LOBBY',
     PRECHAIR: 'PRECHAIR',
     CHAIR: 'CHAIR',
     CHAIRWINNER: 'CHAIRWINNER',
@@ -146,7 +145,7 @@ function startGame(){
 
 // State handlers
 
-onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,to) => {
+onStateChange(GAME_STATES.CHAIR,GAME_STATES.PRECHAIR, (from,to) => {
     let wait_time = getRandomInt(MIN_PRECHAIR_WAIT,MAX_PRECHAIR_WAIT)
     console.log(`Waiting for ${wait_time} seconds for chairs`)
     setTimeout(() => {
