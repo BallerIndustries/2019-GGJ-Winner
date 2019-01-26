@@ -41,12 +41,13 @@ function setupSocket(socket) {
     });
 
     socket.on('new_player',(enemyState) => {
-        console.log('New Player Joined: ',enemyState)
+        console.log('New Player Joined: ', enemyState);
         spawnEnemy(enemyState)
     });
 
-    socket.on('player_left',(msg) => {
-        console.log('Player Left: ',msg)
+    socket.on('player_left',(enemyState) => {
+        console.log('Player Left: ', enemyState);
+        removeEnemy(enemyState.id);
     });
 }
 
@@ -94,9 +95,29 @@ function createPlayer(playerState) {
     player.setScale(0.35)
 }
 
+const enemies = {};
+
+function removeEnemy(enemyId) {
+    const enemy = enemies[enemyId];
+
+    if (enemy === undefined) {
+        console.log(`Woah that was unexpected! Unable to find enemy with enemiyId = ${enemyId}`)
+        return
+    }
+
+    // Remove the game object from Phaser
+    const {enemyState, enemyGameObject} = enemy
+    enemyGameObject.setActive(false)
+    enemyGameObject.setVisible(false)
+
+    // Remove this enemy from our map of enemies
+    delete enemy[enemyId]
+}
+
 function spawnEnemy(enemyState) {
-    const enemy = game.add.image(enemyState.x, enemyState.y, 'player');
-    enemy.setScale(0.35)
+    const enemyGameObject = game.add.image(enemyState.x, enemyState.y, 'player');
+    enemyGameObject.setScale(0.35);
+    enemies[enemyState.id] = {enemyState, enemyGameObject}
 }
 
 main();
