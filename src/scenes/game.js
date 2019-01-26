@@ -31,35 +31,49 @@ export default class Game extends Phaser.Scene {
         socket.emit('login',{name: this.name})
     }
 
-    update ()
+    update()
     {
         if (this.playerSprite === null) {
             return
         }
-    
+
+        // angle 0   -> EAST
+        // angle 90  -> SOUTH
+        // angle 180 -> WEST
+        // angle 270 -> NORTH
+
         let hasMoved = false;
-    
+        //console.log('playerSprite.angle = ' + playerSprite.angle);
+
         // Tank controls, left and right rotate the sprite.
-        if (cursors.left.isDown) {
-            playerSprite.angle -= 6;
+        if (this.cursors.left.isDown) {
+            this.playerSprite.angle -= 6;
             hasMoved = true;
         }
-        else if (cursors.right.isDown) {
-            playerSprite.angle += 6;
+        else if (this.cursors.right.isDown) {
+            this.playerSprite.angle += 6;
             hasMoved = true;
         }
 
-        if (cursors.up.isDown) {
-            playerSprite.y -= 6;
+        // const r = 5;
+        const radians = degreesToRadians(this.playerSprite.angle - 90);
+        const x = (6 * Math.sin(radians));
+        const y = (6 * Math.cos(radians));
+        console.log(`x = ${x} y = ${y}`);
+
+        if (this.cursors.up.isDown) {
+            this.playerSprite.x -= x;
+            this.playerSprite.y += y;
             hasMoved = true;
         }
-        else if (cursors.down.isDown) {
-            playerSprite.y += 6;
+        else if (this.cursors.down.isDown) {
+            this.playerSprite.x += x;
+            this.playerSprite.y -= y;
             hasMoved = true;
         }
 
         if (hasMoved) {
-            const {x, y, angle} = playerSprite;
+            const {x, y, angle} = this.playerSprite;
             emitMove(x, y, angle)
         }
     }
@@ -149,7 +163,10 @@ export default class Game extends Phaser.Scene {
             }
         })
     }
-    
+}
+
+function degreesToRadians(degrees) {
+    return (degrees / 180.0) * Math.PI
 }
 
 
