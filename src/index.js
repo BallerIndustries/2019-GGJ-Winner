@@ -1,4 +1,3 @@
-import Phaser from 'phaser';
 import io from 'socket.io-client';
 
 let player = null;
@@ -124,7 +123,6 @@ function spawnEnemy(enemyState) {
 function createStateOfWorld(stateOfWorld) {
     console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
     const {players: enemies} = stateOfWorld;
-
     Object.values(enemies).forEach(enemy => spawnEnemy(enemy))
 }
 
