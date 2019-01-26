@@ -14,8 +14,6 @@ const GAME_STATES = {
     FINALWINNER: 'FINALWINNER'
 };
 
-let gameState = GAME_STATES.LOBBY;
-
 module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
 module.exports.movePlayer = movePlayer;
@@ -48,7 +46,23 @@ function movePlayer(playerID, x, y) {
 function getSOW() {
     return {
         gameState: gameState,
-        players: playerState
+        players: playerState,
+        chairs: chairState
+    }
+}
+
+function clearChairs() {
+    chairState = []
+}
+
+function addChairs(n){
+    for(let i = 0;i < n;i++){
+        chairState.push({
+            id: i,
+            x: getRandomInt(0, GRID_WIDTH),
+            y: getRandomInt(0, GRID_HEIGHT),
+            taken: false
+        })
     }
 }
 
@@ -71,7 +85,7 @@ function getCurrentState() {
 }
 
 function onStateChange(from, to, func) {
-    stateChangeMap[stateChangeKe(from, to)] = func
+    stateChangeMap[stateChangeKey(from, to)] = func
 }
 
 // ===== MISC =====
@@ -80,7 +94,7 @@ function onStateChange(from, to, func) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
-
++
 function stateChangeKey(from, to) {
     return from + '->' + to
 }
