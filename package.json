@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start-dev": "webpack && npm start",
-    "start": "node server.js",
+    "start": "nodemon server.js",
     "heroku-postbuild": "webpack",
     "watch": "webpack --watch --progress"
   },
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "webpack": "^4.29.0",
+    "nodemon": "^1.18.9",
     "webpack-cli": "^3.2.1"
   },
   "engines": {

@@ -1,5 +1,7 @@
 const playerState = {}
 const stateChangeMap = {}
+let chairState = []
+let gameState = GAME_STATES.LOBBY
 
 const GRID_WIDTH = 800
 const GRID_HEIGHT = 600
@@ -48,6 +50,10 @@ function getSOW() {
         gameState: gameState,
         players: playerState
     }
+}
+
+function numPlayers(){
+    return playerState.keys.length
 }
 
 function changeState(to) {
