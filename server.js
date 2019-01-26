@@ -15,7 +15,8 @@ io.on('connection', (socket) => {
   game.addPlayer(playerId)
 
   // Send current player the state of the world
-  socket.emit('sow',game.getSOW())
+  socket.emit('sow',game.getSOW());
+  socket.emit('your_position', game.playerState[playerId]);
 
   // Send everyone else that a new player has joined
   socket.broadcast.emit('new_player', game.playerState[playerId])

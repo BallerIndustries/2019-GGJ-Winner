@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import io from 'socket.io-client';
 
-let cursors;
-let socket;
+let player = null;
+let cursors = null;
+let socket = null;
 
 function main() {
     const config = {
@@ -22,27 +23,30 @@ function main() {
         }
     };
 
-    socket = io();
-    setupSocket(socket);
     new Phaser.Game(config);
 }
 
 function setupSocket(socket) {
     socket.on('connect', () => {
         console.log('socket connected')
-    })
+    });
 
     socket.on('sow',(msg) => {
         console.log('Got SOW: ',msg)
-    })
+    });
+
+    socket.on('your_position', function(playerState) {
+        console.log(`Got your_position = ${JSON.stringify(playerState)}`)
+        createPlayer(playerState)
+    });
 
     socket.on('new_player',(msg) => {
         console.log('New Player Joined: ',msg)
-    })
+    });
 
     socket.on('player_left',(msg) => {
         console.log('Player Left: ',msg)
-    })
+    });
 }
 
 function preload() {
@@ -53,6 +57,9 @@ function preload() {
 }
 
 function update() {
+    if (player === null) {
+        return
+    }
 
     if (cursors.left.isDown) {
         player.x -= 10;
@@ -69,10 +76,21 @@ function update() {
     }
 }
 
-let player;
+let game = null;
 
 function create() {
-    player = this.add.image(400, 300, 'player');
+    game = this;
+    game.cameras.main.setBackgroundColor('#CCCCCC');
+
+    console.log('created game');
+    socket = io();
+    setupSocket(socket);
+}
+
+function createPlayer(playerState) {
+    //debugger
+    player = game.add.image(playerState.x, playerState.y, 'player');
+    player.setScale(0.35)
 }
 
 main();
