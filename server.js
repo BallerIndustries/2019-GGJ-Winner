@@ -38,6 +38,18 @@ io.on('connection', (socket) => {
     game.changeState('PRECHAIR')
   })
 
+  socket.on('claim_chair',msg => {
+    let success = game.claimChair(playerId,msg.chair_id)
+    if(success){
+      console.log(`${playerId} claimed chair ${msg.chair_id}`)
+      io.broadcast('chair_taken',{
+        chair_id: msg.chair_id,
+        player_id: playerId
+      })
+      game.checkWinCondition()
+    }
+  })
+
   socket.on('move_player',(playerState) => {
     console.log(`playerState = ${JSON.stringify(playerState)}`);
     moveUpdates[playerId] = {id:playerId, x:playerState.x, y: playerState.y, angle: playerState.angle}
@@ -85,6 +97,16 @@ game.onStateChange('PRECHAIR','CHAIR',(from,to) => {
     chairs: chairs
   })
 })
+
+game.onStateChange('CHAIR','CHAIRWINNER',(from,to) => {
+  let losers = game.getLosers()
+  io.emit('state_change',{
+    from: from,
+    to: to,
+    losers: losers
+  })
+})
+
 
 setInterval(tick,Math.floor(1000/TICK_RATE))
 

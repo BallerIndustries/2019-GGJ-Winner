@@ -12,12 +12,14 @@ const playerState = {}
 const stateChangeMap = {}
 let chairState = []
 let gameState = GAME_STATES.LOBBY
+let timer = null
 
 const GRID_WIDTH = 1024
 const GRID_HEIGHT = 660
 const MIN_PRECHAIR_WAIT = 1
 const MAX_PRECHAIR_WAIT = 2
 const CHAIR_ROUND_WAIT = 15
+const CHAIRWINNER_ROUND_WAIT = 5
 
 module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
@@ -28,6 +30,12 @@ module.exports.getPlayerState = getPlayerState;
 module.exports.onStateChange = onStateChange;
 module.exports.changeState = changeState;
 module.exports.getChairs = getChairs;
+module.exports.claimChair = claimChair;
+module.exports.numChairs = numChairs;
+module.exports.numChairsTaken = numChairsTaken;
+module.exports.isAllChairsTaken = isAllChairsTaken;
+module.exports.checkWinCondition = checkWinCondition;
+module.exports.getLosers = getLosers;
 
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
@@ -40,7 +48,8 @@ function addPlayer(playerID,name) {
         y,
         angle,
         name,
-        alive: gameState === GAME_STATES.LOBBY
+        alive: gameState === GAME_STATES.LOBBY,
+        sitting: false
     };
 
     playerState[playerID] = player;
@@ -96,12 +105,16 @@ function claimChair(playerID,chairID){
     }
     chairState[chairID].taken = true
     chairState[chairID].player = playerID
+    playerState[playerID].sitting = true
     console.log(`${playerID} took chair ${chairID}`)
     return true
 }
 
-function clearChairs() {
+function resetRound() {
     chairState = []
+    for(let p in playerState){
+        playerState[p].sitting = false
+    }
 }
 
 function addChairs(n){
@@ -128,6 +141,42 @@ function numPlayersAlive(){
     return Object.entries(playerState).filter((entry) => {
         return entry[1].alive
     }).length
+}
+
+function numChairs(){
+    return chairState.keys.length
+}
+
+function numChairsTaken(){
+    return Object.entries(chairState).filter((entry) => {
+        return entry[1].taken
+    }).length
+}
+
+function isAllChairsTaken(){
+    return numChairs() === numChairsTaken()
+}
+
+function checkWinCondition(){
+    let cond = isAllChairsTaken() || numPlayersAlive() <= 1
+    if(cond){
+        // make everyone who lost dead
+        let losers = getLosers()
+        for(let l of losers){
+            playerState[l].alive = false
+        }
+        changeState(GAME_STATES.CHAIRWINNER)
+        if(timer){
+            clearTimeout(timer)
+            timer = null
+        }
+    }
+}
+
+function getLosers(){
+    return Object.entries(playerState).filter(x => {
+        return !x[1].sitting
+    }).map(x => x.id)
 }
 
 function changeState(to) {
@@ -187,8 +236,14 @@ onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,
 
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
     console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
+    timer = setTimeout(()=> {
+        changeState(GAME_STATES.CHAIRWINNER)
+    },CHAIRWINNER_ROUND_WAIT)
 })
 
+onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
+    
+})
 
 // ===== MISC =====
 

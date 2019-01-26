@@ -134,6 +134,7 @@ export default class Game extends Phaser.Scene {
         chairGameObject.setScale(0.4);
         chairGameObject.depth = -1
         this.chairs[chair.id] = {chair, chairGameObject}
+        this.chairCollisionGroup
     }
     
     createStateOfWorld(stateOfWorld) {
