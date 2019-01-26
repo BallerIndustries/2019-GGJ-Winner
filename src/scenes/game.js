@@ -39,27 +39,28 @@ export default class Game extends Phaser.Scene {
     
         let hasMoved = false;
     
-        if (this.cursors.left.isDown) {
-            this.playerSprite.x -= 6;
+        // Tank controls, left and right rotate the sprite.
+        if (cursors.left.isDown) {
+            playerSprite.angle -= 6;
             hasMoved = true;
         }
-        else if (this.cursors.right.isDown) {
-            this.playerSprite.x += 6;
+        else if (cursors.right.isDown) {
+            playerSprite.angle += 6;
             hasMoved = true;
         }
-        
-        if (this.cursors.up.isDown) {
-            this.playerSprite.y -= 6;
+
+        if (cursors.up.isDown) {
+            playerSprite.y -= 6;
             hasMoved = true;
         }
-        else if (this.cursors.down.isDown) {
-            this.playerSprite.y += 6;
+        else if (cursors.down.isDown) {
+            playerSprite.y += 6;
             hasMoved = true;
         }
-    
+
         if (hasMoved) {
-            const {x, y} = this.playerSprite;
-            emitMove(x, y)
+            const {x, y, angle} = playerSprite;
+            emitMove(x, y, angle)
         }
     }
     

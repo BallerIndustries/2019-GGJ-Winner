@@ -23,9 +23,9 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('player_left',{id: playerId})
     console.log(`a user has disconnected. playerId = ${playerId} reason = ${JSON.stringify(reason)}`)
   });
-  
-  socket.on('move_player',(msg) => {
-    moveUpdates[playerId] = {id:playerId, x:msg.x, y: msg.y}
+
+  socket.on('move_player',(playerState) => {
+    moveUpdates[playerId] = {id:playerId, x:playerState.x, y: playerState.y, angle: playerState.angle}
   })
   
   socket.on('login',msg => {
@@ -44,11 +44,13 @@ function tick(){
     return
   }
   _.each(moveUpdates,(msg,k) => {
-    game.movePlayer(msg.id,msg.x,msg.y)
+    game.movePlayer(msg.id,msg.x,msg.y, msg.angle)
   })
+
   let upd = _.map(moveUpdates,(v,k)=>{
-    return {id: k, x: v.x, y: v.y}
+    return {id: k, x: v.x, y: v.y, angle: v.angle}
   })
+
   moveUpdates = {}
   io.emit('move_player',upd)
 }

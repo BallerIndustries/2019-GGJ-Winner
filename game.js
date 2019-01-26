@@ -13,8 +13,8 @@ const stateChangeMap = {}
 let chairState = []
 let gameState = GAME_STATES.LOBBY
 
-const GRID_WIDTH = 800
-const GRID_HEIGHT = 600
+const GRID_WIDTH = 1024
+const GRID_HEIGHT = 660
 const MIN_PRECHAIR_WAIT = 5
 const MAX_PRECHAIR_WAIT = 15
 const CHAIR_ROUND_WAIT = 15
@@ -49,7 +49,7 @@ function removePlayer(playerID) {
     console.log(`playerState = ${JSON.stringify(playerState)}`)
 }
 
-function movePlayer(playerID, x, y) {
+function movePlayer(playerID, x, y, angle) {
     const player = playerState[playerID]
 
     if (player === undefined) {
@@ -60,6 +60,7 @@ function movePlayer(playerID, x, y) {
 
     playerState[playerID].x = x
     playerState[playerID].y = y
+    playerState[playerID].angle = angle
 }
 
 function getPlayerState(playerID) {
