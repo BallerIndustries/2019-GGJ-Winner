@@ -32,15 +32,15 @@ function setupSocket(socket) {
         console.log('socket connected')
     })
 
-    sock.on('sow',(msg) => {
+    socket.on('sow',(msg) => {
         console.log('Got SOW: ',msg)
     })
 
-    sock.on('new_player',(msg) => {
+    socket.on('new_player',(msg) => {
         console.log('New Player Joined: ',msg)
     })
 
-    sock.on('player_left',(msg) => {
+    socket.on('player_left',(msg) => {
         console.log('Player Left: ',msg)
     })
 }
