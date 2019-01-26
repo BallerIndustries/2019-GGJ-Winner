@@ -88,17 +88,21 @@ export default class Game extends Phaser.Scene {
     }
     
     spawnPlayer(playerState) {
+        const {playerContainer, playerSprite} = this.spawnCharacter(playerState);
+        this.playerContainer = playerContainer;
+        this.playerSprite = playerSprite;
+    }
+
+    spawnCharacter(playerState) {
         const {x, y, name} = playerState;
 
         const playerContainer = this.add.container(x, y);
         const playerSprite = this.add.image(0, 0, 'player');
         playerSprite.setScale(0.17);
 
-        const playerNameGameObject = this.add.text(-20, -40, name,{ fontSize: '14px', fill: '#000000' });
+        const playerNameGameObject = this.add.text(-20, -40, name, {fontSize: '14px', fill: '#000000'});
         playerContainer.add([playerSprite, playerNameGameObject]);
-
-        this.playerContainer = playerContainer;
-        this.playerSprite = playerSprite;
+        return {playerContainer, playerSprite};
     }
 
     removeEnemy(enemyId) {
@@ -119,9 +123,8 @@ export default class Game extends Phaser.Scene {
     }
 
     spawnEnemy(enemyState) {
-        const enemyGameObject = this.add.image(enemyState.x, enemyState.y, 'player');
-        enemyGameObject.setScale(0.17);
-        this.enemies[enemyState.id] = {enemyState, enemyGameObject}
+        const {playerContainer: enemyContainer, playerSprite: enemySprite} = this.spawnCharacter(enemyState);
+        this.enemies[enemyState.id] = {enemyState, enemyContainer, enemySprite}
     }
     
     createStateOfWorld(stateOfWorld) {
@@ -144,11 +147,11 @@ export default class Game extends Phaser.Scene {
             return
         }
     
-        const {enemyState, enemyGameObject} = enemy;
-    
-        enemyGameObject.x = x;
-        enemyGameObject.y = y;
-        enemyGameObject.angle = angle;
+        const {enemyState, enemyContainer, enemySprite} = enemy;
+
+        enemyContainer.x = x;
+        enemyContainer.y = y;
+        enemySprite.angle = angle;
     }
 
     setupSocket(socket) {
