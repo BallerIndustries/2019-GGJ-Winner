@@ -218,7 +218,8 @@ export default class Game extends Phaser.Scene {
         const {players: enemies, wallState} = stateOfWorld;
         this.player_id = stateOfWorld.playerID
         Object.values(enemies).forEach(enemy => {
-            if(enemy.id !== this.player_id){
+            if(enemy.id !== this.player_id && enemy.alive){
+                console.log('spawning',enemy)
                 this.spawnEnemy(enemy)
             }
         });
@@ -303,7 +304,9 @@ export default class Game extends Phaser.Scene {
     
         socket.on('new_player',(enemyState) => {
             console.log('New Player Joined: ', enemyState);
-            self.spawnEnemy(enemyState);
+            if(enemyState.alive){
+                self.spawnEnemy(enemyState);
+            }
         });
     
         socket.on('player_left',(enemyState) => {
