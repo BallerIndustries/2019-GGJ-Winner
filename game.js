@@ -13,6 +13,7 @@ const stateChangeMap = {}
 let chairState = []
 let gameState = GAME_STATES.LOBBY
 let timer = null
+let wallState = generateWalls(); // A Wall is a rectangle with {x, y, width, height}
 
 const GRID_WIDTH = 1024
 const GRID_HEIGHT = 660
@@ -90,11 +91,13 @@ function getSOW(playerID) {
     const enemies = _.pickBy(playerState, (val,key) => {
         return key !== playerID
     })
+
     return {
         playerID: playerID,
         gameState: gameState,
         players: enemies,
-        chairs: chairState
+        chairs: chairState,
+        wallState,
     }
 }
 
@@ -257,4 +260,20 @@ function getRandomInt(min, max) {
 
 function stateChangeKey(from, to) {
     return from + '->' + to
+}
+
+function generateWalls() {
+    // Grid is 1024 x 660
+
+    // Generate walls at intervals of 40?
+
+    // Hardcode the walls for now?
+    const generateWall = (x, y, width, height) => {
+        return {x, y, width, height}
+    };
+
+    return [
+        generateWall(50, 0, 200, 50),
+        generateWall(150, 50, 400, 50)
+    ]
 }
