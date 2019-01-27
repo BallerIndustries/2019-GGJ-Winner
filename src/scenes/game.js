@@ -264,12 +264,12 @@ export default class Game extends Phaser.Scene {
     }
 
     displayWinner() {
-        let style = { font: "bold 60px Arial", fill: "#FF00000", boundsAlignH: "center", boundsAlignV: "middle" };
+        let style = { font: "bold 70px Arial", fill: "#FF0000", boundsAlignH: "center", boundsAlignV: "middle" };
         this.add.text(240, 300, "YOU WIN :)", style);
     }
 
     displayLoser() {
-        let style = { font: "bold 60px Arial", fill: "#FF0000", boundsAlignH: "center", boundsAlignV: "middle" };
+        let style = { font: "bold 70px Arial", fill: "#FF0000", boundsAlignH: "center", boundsAlignV: "middle" };
         this.add.text(240, 300, "YOU LOSE :(", style);
     }
     playChairMusic() {
@@ -385,7 +385,7 @@ export default class Game extends Phaser.Scene {
                 }
                 setTimeout(() => {
                     window.location.reload();
-                },10000)
+                },8000)
             }
         })
     }
