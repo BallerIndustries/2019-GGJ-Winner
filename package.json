@@ -4,11 +4,11 @@
   "description": "",
   "private": true,
   "scripts": {
-    "start-dev": "webpack && nodemon server.js",
+    "start-dev": "webpack --mode=development && nodemon server.js",
     "start": "node server.js",
     "heroku-postbuild": "webpack",
     "postinstall": "webpack",
-    "watch": "webpack --watch --progress"
+    "watch": "webpack --mode=development --watch --progress"
   },
   "keywords": [],
   "author": "",
