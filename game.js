@@ -15,7 +15,7 @@ const GAME_STATES = {
     FINALWINNER: 'FINALWINNER'
 };
 
-let playerState = {}
+const playerState = {}
 const stateChangeMap = {}
 let chairState = []
 let gameState = GAME_STATES.LOBBY
@@ -38,19 +38,13 @@ module.exports.isAllChairsTaken = isAllChairsTaken;
 module.exports.checkWinCondition = checkWinCondition;
 module.exports.getLosers = getLosers;
 module.exports.resetRound = resetRound;
-module.exports.lastPlayer = lastPlayer;
-
-function resetAll(){
-    playerState = {}
-    chairState = []
-    gameState = GAME_STATES.LOBBY
-    timer = null
-    wallState = generateWalls();
-}
 
 function addPlayer(playerID,name) {
-    const x = getRandomInt(0, GRID_WIDTH);
-    const y = getRandomInt(0, GRID_HEIGHT);
+    // const x = getRandomPointOutsideOfWalls(wallState);
+    // const y = getRandomPointOutsideOfWalls(wallState);
+
+    const {x, y} = getRandomPointOutsideOfWalls(wallState);
+
     const angle = 0;
 
     const player = {
@@ -134,15 +128,48 @@ function resetRound() {
 }
 
 function addChairs(n){
-    for(let i = 0;i < n;i++){
+    for(let i = 0;i < n;i++) {
+        const { x, y } = getRandomPointOutsideOfWalls(wallState);
+
         chairState.push({
             id: i,
-            x: getRandomInt(0, GRID_WIDTH),
-            y: getRandomInt(0, GRID_HEIGHT),
+            x: x,
+            y: y,
             taken: false,
             player: null
         })
     }
+}
+
+function getRandomPointOutsideOfWalls(wallState) {
+    let pointIsInWalls = false;
+    let x;
+    let y;
+
+    const wallContainsPoint = (wall, x, y) => {
+        return x > wall.x && x < wall.x + wall.width && y > wall.y && y < wall.y + wall.height;
+    };
+
+    do {
+        pointIsInWalls = false
+        x = getRandomInt(20, GRID_WIDTH - 20);
+        y = getRandomInt(20, GRID_HEIGHT - 20);
+
+        for (let i = 0; i < wallState.length; i++) {
+
+            const wall = wallState[i];
+
+            if (wallContainsPoint(wall, x, y)) {
+                pointIsInWalls = true;
+                break;
+            }
+        }
+    } while (pointIsInWalls)
+
+    const point = {x, y}
+
+    console.log('getRandomPointOutsideOfWalls() = ', point);
+    return point
 }
 
 function getChairs() {
@@ -157,16 +184,6 @@ function numPlayersAlive(){
     return Object.entries(playerState).filter((entry) => {
         return entry[1].alive
     }).length
-}
-
-function lastPlayer() {
-    for(let p of Object.entries(playerState)){
-        console.log(p)
-        if(p[1].alive){
-            return p[0]
-        }
-    }
-    return 'NOONE'
 }
 
 function numChairs(){
@@ -281,12 +298,6 @@ onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
             changeState(GAME_STATES.PRECHAIR)
         },CHAIRWINNER_ROUND_WAIT*1000)
     }
-})
-
-onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.FINALWINNER, (from,to) => {
-    setTimeout(() => {
-        resetAll()
-    },2000)
 })
 
 // ===== MISC =====
