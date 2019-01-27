@@ -16,6 +16,7 @@ export default class Game extends Phaser.Scene {
         this.playerCanMove = true
         this.player_id = null
         this.name = null
+        this.chairMusic = null
     }
 
     init(data){
@@ -31,11 +32,14 @@ export default class Game extends Phaser.Scene {
         this.load.image('player', 'assets/player/survivor-idle_handgun_0.png')
         this.load.image('chair', 'assets/chair.png')
         this.load.image('wall', 'assets/wall.png')
+        this.load.audio('chairMusic', 'assets/get-a-fucking-chair.mp3')
     }
 
     create ()
     {
         this.cameras.main.setBackgroundColor('#CCCCCC');
+        this.chairMusic = this.sound.add('chairMusic');
+
         this.cursors = this.input.keyboard.createCursorKeys();
         this.chairGroup = this.physics.add.group();
         this.wallGroup = this.physics.add.staticGroup();
@@ -244,11 +248,21 @@ export default class Game extends Phaser.Scene {
     }
 
     playerTakeChair(id){
+        this.stopChairMusic()
+
         let {chair,chairObject} = this.chairs[id]
         this.playerContainer.setPosition(chair.x,chair.y)
         this.playerCanMove = false
         this.playerContainer.body.stop()
         emitMove(this.playerContainer.x, this.playerContainer.y, this.playerSprite.angle)
+    }
+
+    playChairMusic() {
+        this.chairMusic.play();
+    }
+
+    stopChairMusic() {
+        this.chairMusic.stop();
     }
 
     setupSocket(socket) {
@@ -295,7 +309,10 @@ export default class Game extends Phaser.Scene {
 
         socket.on('state_change',(msg) => {
             const {from,to} = msg
+
             if(from === 'PRECHAIR' && to === 'CHAIR'){
+                this.playChairMusic()
+
                 console.log('Changed to CHAIR state')
                 let chairs = msg.chairs
                 self.chairGroup.clear()
