@@ -2,9 +2,9 @@ const _ = require('lodash')
 
 const GRID_WIDTH = 1024
 const GRID_HEIGHT = 660
-const MIN_PRECHAIR_WAIT = 1
-const MAX_PRECHAIR_WAIT = 2
-const CHAIR_ROUND_WAIT = 30
+const MIN_PRECHAIR_WAIT = 5
+const MAX_PRECHAIR_WAIT = 10
+const CHAIR_ROUND_WAIT = 20
 const CHAIRWINNER_ROUND_WAIT = 3
 
 const GAME_STATES = {
@@ -307,12 +307,9 @@ onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
 })
 
 onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
-    let res = checkWinCondition()
-    if(!res){
-        setTimeout(() => {
-            changeState(GAME_STATES.PRECHAIR)
-        },CHAIRWINNER_ROUND_WAIT*1000)
-    }
+    setTimeout(() => {
+        changeState(GAME_STATES.PRECHAIR)
+    },CHAIRWINNER_ROUND_WAIT*1000)
 })
 
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.FINALWINNER, (from,to) => {
