@@ -115,8 +115,10 @@ export default class Game extends Phaser.Scene {
 
     killPlayer(){
         this.playerAlive = false
+        this.playerCanMove = false
         this.playerContainer.setVisible(false)
         this.playerContainer.setActive(false)
+        // this.playerContainer.destroy()
     }
 
     tryAddPlayerAndWallsCollider() {

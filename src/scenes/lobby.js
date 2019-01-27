@@ -19,7 +19,7 @@ export default class Name extends Phaser.Scene {
             return
         }
 
-        if (this.enterKey.isDown) {
+        if (this.aKey.isDown && this.cKey.isDown && this.kKey.isDown && this.mKey.isDown) {
             socket.emit('start_game')
         }
     }
@@ -29,7 +29,10 @@ export default class Name extends Phaser.Scene {
 
     create (){
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
+        this.aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.cKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
+        this.kKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+        this.mKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.M);
         let self = this
         // Setup socket
         socket.removeAllListeners()
@@ -62,11 +65,11 @@ export default class Name extends Phaser.Scene {
         this.add.text(20, 10, "Lobby", style);
 
 
-        style = { font: "bold 40px Arial", fill: "#f44141", boundsAlignH: "center", boundsAlignV: "middle", backgroundColor: '#42b0f4' }
-        let startbutton = this.add.text(860, 10, " START ", style);
-        startbutton.setInteractive().on('pointerdown', () => {
-            socket.emit('start_game')
-        });
+        // style = { font: "bold 40px Arial", fill: "#f44141", boundsAlignH: "center", boundsAlignV: "middle", backgroundColor: '#42b0f4' }
+        // let startbutton = this.add.text(860, 10, " START ", style);
+        // startbutton.setInteractive().on('pointerdown', () => {
+        //     socket.emit('start_game')
+        // });
 
         socket.emit('login',{name: this.name})
 
