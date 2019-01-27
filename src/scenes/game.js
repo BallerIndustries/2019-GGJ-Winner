@@ -102,6 +102,18 @@ export default class Game extends Phaser.Scene {
         const {playerContainer, playerSprite} = this.spawnCharacter(playerState);
         this.playerContainer = playerContainer;
         this.playerSprite = playerSprite;
+
+        this.tryAddPlayerAndWallsCollider()
+    }
+
+    tryAddPlayerAndWallsCollider() {
+        if (this.playerContainer === null || this.wallGroup === null) {
+            console.log("Failed to add player and walls collider. playerContainer or wallGroup is null");
+            return
+        }
+
+        this.physics.add.collider(this.playerContainer, this.wallGroup);
+        console.log("Succesfully added player and walls collider.");
     }
 
     spawnCharacter(playerState) {
@@ -192,6 +204,7 @@ export default class Game extends Phaser.Scene {
         });
 
         wallState.forEach(wall => this.createWall(wall))
+        this.tryAddPlayerAndWallsCollider()
     }
 
     createWall({x, y, width, height}) {
