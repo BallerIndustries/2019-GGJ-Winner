@@ -89,7 +89,7 @@ game.onStateChange('LOBBY','PRECHAIR',(from,to) => {
   })
 })
 
-game.onStateChange('PRECHAIR','CHAIR',(from,to) => {
+game.onStateChange(['CHAIRWINNER','PRECHAIR'],'CHAIR',(from,to) => {
   let chairs = game.getChairs()
   io.emit('state_change',{
     from: from,
@@ -106,6 +106,7 @@ game.onStateChange('CHAIR','CHAIRWINNER',(from,to) => {
     losers: losers
   })
 })
+
 
 
 setInterval(tick,Math.floor(1000/TICK_RATE))

@@ -14,6 +14,7 @@ export default class Game extends Phaser.Scene {
         this.playerSprite = null;
         this.playerContainer = null;
         this.playerCanMove = true
+        this.playerAlive = true
         this.player_id = null
         this.name = null
     }
@@ -109,7 +110,9 @@ export default class Game extends Phaser.Scene {
     }
 
     killPlayer(){
-        
+        this.playerAlive = false
+        this.playerContainer.setVisible(false)
+        this.playerContainer.setActive(false)
     }
 
     tryAddPlayerAndWallsCollider() {
@@ -154,7 +157,6 @@ export default class Game extends Phaser.Scene {
     }
     
     onChairCollide(player,chair){
-        console.log('Hit chair',chair.chair_id)
         if(chair.taken || chair.collided){
             return
         }
@@ -172,10 +174,10 @@ export default class Game extends Phaser.Scene {
         }
     
         // Remove the game object from Phaser
-        const {enemyState, enemyGameObject} = enemy
-        enemyGameObject.setActive(false)
-        enemyGameObject.setVisible(false)
-        this.enemyGroup.remove(enemyGameObject)
+        const {enemyState, enemyContainer, enemySprite} = enemy
+        enemyContainer.setActive(false)
+        enemyContainer.setVisible(false)
+        this.enemyGroup.remove(enemyContainer)
         // Remove this enemy from our map of enemies
         delete enemy[enemyId]
     }
@@ -269,7 +271,9 @@ export default class Game extends Phaser.Scene {
     
         socket.on('player_state', function(playerState) {
             console.log(`Got your_position = ${JSON.stringify(playerState)}`);
-            self.spawnPlayer(playerState);
+            if(playerState.alive){
+                self.spawnPlayer(playerState);
+            }
         });
     
         socket.on('new_player',(enemyState) => {
@@ -288,12 +292,12 @@ export default class Game extends Phaser.Scene {
 
         socket.on('chair_taken', msg => {
             console.log('Chair taken: ',msg)
-            console.log(this.player_id)
-            if(this.player_id === msg.player_id){
+            console.log(self.player_id)
+            if(self.player_id === msg.player_id){
                 console.log('thats you!')
                 self.playerTakeChair(msg.chair_id)
             }else{
-                this.chairs[msg.chair_id].chairGameObject.taken = true
+                self.chairs[msg.chair_id].chairGameObject.taken = true
             }
         })
 
@@ -302,6 +306,7 @@ export default class Game extends Phaser.Scene {
             if(from === 'PRECHAIR' && to === 'CHAIR'){
                 console.log('Changed to CHAIR state')
                 let chairs = msg.chairs
+                console.log(chairs)
                 self.chairGroup.clear()
                 for(let c of chairs){
                     self.spawnChair(c)
@@ -311,10 +316,29 @@ export default class Game extends Phaser.Scene {
             
             if(from === 'CHAIR' && to === 'CHAIRWINNER'){
                 let losers = msg.losers
+                console.log('losers',losers)
                 for(let l of losers){
-                    if(l === this.player_id){
-
+                    if(l === self.player_id){
+                        self.killPlayer()
+                        continue
                     }
+                    const enemy = self.enemies[l];
+    
+                    if (enemy === undefined) {
+                        console.log(`Woah that was unexpected! Unable to find enemy with enemyId = ${l}`)
+                        continue
+                    }
+                
+                    // Remove the game object from Phaser
+                    const {enemyContainer} = enemy
+                    console.log('enemy',enemy)
+                    enemyContainer.setActive(false)
+                    enemyContainer.setVisible(false)
+                    console.log('fuck you')
+                }
+                if(self.playerAlive){
+                    self.playerCanMove = true
+                    self.chairGroup.clear()
                 }
             }
         })
