@@ -108,6 +108,10 @@ export default class Game extends Phaser.Scene {
         this.tryAddPlayerAndWallsCollider()
     }
 
+    killPlayer(){
+        
+    }
+
     tryAddPlayerAndWallsCollider() {
         if (this.playerContainer === null || this.wallGroup === null) {
             console.log("Failed to add player and walls collider. playerContainer or wallGroup is null");
@@ -305,6 +309,14 @@ export default class Game extends Phaser.Scene {
                 return
             }
             
+            if(from === 'CHAIR' && to === 'CHAIRWINNER'){
+                let losers = msg.losers
+                for(let l of losers){
+                    if(l === this.player_id){
+
+                    }
+                }
+            }
         })
     }
 }
