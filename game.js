@@ -15,7 +15,7 @@ const GAME_STATES = {
     FINALWINNER: 'FINALWINNER'
 };
 
-let playerState = {}
+const playerState = {}
 const stateChangeMap = {}
 let chairState = []
 let gameState = GAME_STATES.LOBBY
@@ -38,19 +38,13 @@ module.exports.isAllChairsTaken = isAllChairsTaken;
 module.exports.checkWinCondition = checkWinCondition;
 module.exports.getLosers = getLosers;
 module.exports.resetRound = resetRound;
-module.exports.lastPlayer = lastPlayer;
-
-function resetAll(){
-    playerState = {}
-    chairState = []
-    gameState = GAME_STATES.LOBBY
-    timer = null
-    wallState = generateWalls();
-}
 
 function addPlayer(playerID,name) {
-    const x = getRandomInt(0, GRID_WIDTH);
-    const y = getRandomInt(0, GRID_HEIGHT);
+    // const x = getRandomPointOutsideOfWalls(wallState);
+    // const y = getRandomPointOutsideOfWalls(wallState);
+
+    const {x, y} = getRandomPointOutsideOfWalls(wallState);
+
     const angle = 0;
 
     const player = {
@@ -192,16 +186,6 @@ function numPlayersAlive(){
     }).length
 }
 
-function lastPlayer() {
-    for(let p of Object.entries(playerState)){
-        console.log(p)
-        if(p[1].alive){
-            return p[0]
-        }
-    }
-    return 'NOONE'
-}
-
 function numChairs(){
     return Object.keys(chairState).length
 }
@@ -307,12 +291,6 @@ onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
     setTimeout(() => {
         changeState(GAME_STATES.PRECHAIR)
     },CHAIRWINNER_ROUND_WAIT*1000)
-})
-
-onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.FINALWINNER, (from,to) => {
-    setTimeout(() => {
-        resetAll()
-    },2000)
 })
 
 // ===== MISC =====
