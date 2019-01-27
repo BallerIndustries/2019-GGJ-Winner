@@ -98,6 +98,13 @@ game.onStateChange(['CHAIRWINNER','PRECHAIR'],'CHAIR',(from,to) => {
   })
 })
 
+game.onStateChange('CHAIRWINNER','PRECHAIR',(from,to) => {
+  io.emit('state_change',{
+    from: from,
+    to: to
+  })
+})
+
 game.onStateChange('CHAIR','CHAIRWINNER',(from,to) => {
   let losers = game.getLosers()
   io.emit('state_change',{
@@ -107,6 +114,14 @@ game.onStateChange('CHAIR','CHAIRWINNER',(from,to) => {
   })
 })
 
+game.onStateChange('PRECHAIR','FINALWINNER',(from,to) => {
+  console.log(game.lastPlayer())
+  io.emit('state_change',{
+    from: from,
+    to: to,
+    winner: game.lastPlayer()
+  })
+})
 
 
 setInterval(tick,Math.floor(1000/TICK_RATE))

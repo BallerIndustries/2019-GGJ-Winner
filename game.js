@@ -38,6 +38,7 @@ module.exports.isAllChairsTaken = isAllChairsTaken;
 module.exports.checkWinCondition = checkWinCondition;
 module.exports.getLosers = getLosers;
 module.exports.resetRound = resetRound;
+module.exports.lastPlayer = lastPlayer;
 
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
@@ -148,6 +149,12 @@ function numPlayersAlive(){
     return Object.entries(playerState).filter((entry) => {
         return entry[1].alive
     }).length
+}
+
+function lastPlayer() {
+    return Object.entries(playerState).filter((entry) => {
+        return entry[1].alive
+    })[0][0]
 }
 
 function numChairs(){

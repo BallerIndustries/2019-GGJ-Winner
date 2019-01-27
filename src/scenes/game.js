@@ -257,6 +257,16 @@ export default class Game extends Phaser.Scene {
         emitMove(this.playerContainer.x, this.playerContainer.y, this.playerSprite.angle)
     }
 
+    displayWinner() {
+        let style = { font: "bold 60px Arial", fill: "#FF00000", boundsAlignH: "center", boundsAlignV: "middle" };
+        this.add.text(240, 300, "YOU WIN :)", style);
+    }
+
+    displayLoser() {
+        let style = { font: "bold 60px Arial", fill: "#FF0000", boundsAlignH: "center", boundsAlignV: "middle" };
+        this.add.text(240, 300, "YOU LOSE :(", style);
+    }
+
     setupSocket(socket) {
         const self = this
         socket.removeAllListeners()
@@ -307,7 +317,6 @@ export default class Game extends Phaser.Scene {
                 console.log('Changed to CHAIR state')
                 let chairs = msg.chairs
                 console.log(chairs)
-                self.chairGroup.clear()
                 for(let c of chairs){
                     self.spawnChair(c)
                 }
@@ -336,10 +345,31 @@ export default class Game extends Phaser.Scene {
                     enemyContainer.setVisible(false)
                     console.log('fuck you')
                 }
+            }
+
+            if(from === 'CHAIRWINNER' && to === 'PRECHAIR'){
+                console.log(self.chairGroup.getChildren())
+                let lame = []
+                self.chairGroup.getChildren().map(child => {
+                    console.log(child)
+                    lame.push(child)
+                })
+                lame.map(child => child.destroy())
+                console.log('done')
                 if(self.playerAlive){
                     self.playerCanMove = true
-                    self.chairGroup.clear()
                 }
+            }
+
+            if(to === 'FINALWINNER'){
+                if(msg.winner === self.player_id){
+                    self.displayWinner()
+                }else{
+                    self.displayLoser()
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                },10000)
             }
         })
     }
