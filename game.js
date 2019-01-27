@@ -1,5 +1,12 @@
 const _ = require('lodash')
 
+const GRID_WIDTH = 1024
+const GRID_HEIGHT = 660
+const MIN_PRECHAIR_WAIT = 1
+const MAX_PRECHAIR_WAIT = 2
+const CHAIR_ROUND_WAIT = 15
+const CHAIRWINNER_ROUND_WAIT = 5
+
 const GAME_STATES = {
     LOBBY: 'LOBBY',
     PRECHAIR: 'PRECHAIR',
@@ -14,13 +21,6 @@ let chairState = []
 let gameState = GAME_STATES.LOBBY
 let timer = null
 let wallState = generateWalls(); // A Wall is a rectangle with {x, y, width, height}
-
-const GRID_WIDTH = 1024
-const GRID_HEIGHT = 660
-const MIN_PRECHAIR_WAIT = 1
-const MAX_PRECHAIR_WAIT = 2
-const CHAIR_ROUND_WAIT = 15
-const CHAIRWINNER_ROUND_WAIT = 5
 
 module.exports.addPlayer = addPlayer;
 module.exports.getSOW = getSOW;
@@ -262,6 +262,7 @@ function stateChangeKey(from, to) {
     return from + '->' + to
 }
 
+// TRUMP TRUMP TRUMP TRUMP TRUMP
 function generateWalls() {
     // Grid is 1024 x 660
 
@@ -272,8 +273,25 @@ function generateWalls() {
         return {x, y, width, height}
     };
 
-    return [
-        generateWall(50, 0, 200, 50),
-        generateWall(150, 50, 400, 50)
+    // Lets have a plus sign
+    const plusSize = 400;
+    const wallWidth = 50;
+
+    const horizontalWallX = (GRID_WIDTH - plusSize) / 2;
+    const horizontalWallY = (GRID_HEIGHT - wallWidth) / 2;
+
+    const verticalWallX = (GRID_WIDTH - wallWidth) / 2;
+    const verticalWallY = (GRID_HEIGHT - plusSize) / 2;
+
+    const walls =  [
+        // Horizontal part of the plus
+        generateWall(horizontalWallX, horizontalWallY, 400, 50),
+
+        // Vertical part of the plus
+        generateWall(verticalWallX, verticalWallY, 50, 400)
     ]
+
+    console.log(JSON.stringify(walls))
+
+    return walls
 }

@@ -210,8 +210,8 @@ export default class Game extends Phaser.Scene {
     createWall({x, y, width, height}) {
         console.log(`createWall() x = ${x} y = ${y} width = ${width} height = ${height}`)
 
-        const movedX = x + 16;
-        const movedY = x + 16;
+        const movedX = x + (width / 2);
+        const movedY = y + (height / 2);
         const scaleX = (width / 32);
         const scaleY = (height / 32);
 
