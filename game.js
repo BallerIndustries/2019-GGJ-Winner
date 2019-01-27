@@ -202,6 +202,7 @@ function checkWinCondition(){
             timer = null
         }
     }
+    return cond
 }
 
 function getLosers(){
@@ -266,14 +267,20 @@ onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
     console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
     timer = setTimeout(()=> {
         console.log('Time has run out')
-        checkWinCondition()
+        let res = checkWinCondition()
+        if(!res){
+            changeState(GAME_STATES.CHAIRWINNER)
+        }
     },CHAIR_ROUND_WAIT*1000)
 })
 
 onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
-    setTimeout(() => {
-        changeState(GAME_STATES.PRECHAIR)
-    },CHAIRWINNER_ROUND_WAIT*1000)
+    let res = checkWinCondition()
+    if(!res){
+        setTimeout(() => {
+            changeState(GAME_STATES.PRECHAIR)
+        },CHAIRWINNER_ROUND_WAIT*1000)
+    }
 })
 
 onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.FINALWINNER, (from,to) => {
