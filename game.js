@@ -125,15 +125,48 @@ function resetRound() {
 }
 
 function addChairs(n){
-    for(let i = 0;i < n;i++){
+    for(let i = 0;i < n;i++) {
+        const { x, y } = getRandomPointOutsideOfWalls(wallState);
+
         chairState.push({
             id: i,
-            x: getRandomInt(0, GRID_WIDTH),
-            y: getRandomInt(0, GRID_HEIGHT),
+            x: x,
+            y: y,
             taken: false,
             player: null
         })
     }
+}
+
+function getRandomPointOutsideOfWalls(wallState) {
+    let pointIsInWalls = false;
+    let x;
+    let y;
+
+    const wallContainsPoint = (wall, x, y) => {
+        return x > wall.x && x < wall.x + wall.width && y > wall.y && y < wall.y + wall.height;
+    };
+
+    do {
+        pointIsInWalls = false
+        x = getRandomInt(20, GRID_WIDTH - 20);
+        y = getRandomInt(20, GRID_HEIGHT - 20);
+
+        for (let i = 0; i < wallState.length; i++) {
+
+            const wall = wallState[i];
+
+            if (wallContainsPoint(wall, x, y)) {
+                pointIsInWalls = true;
+                break;
+            }
+        }
+    } while (pointIsInWalls)
+
+    const point = {x, y}
+
+    console.log('getRandomPointOutsideOfWalls() = ', point);
+    return point
 }
 
 function getChairs() {
