@@ -4,8 +4,8 @@ const GRID_WIDTH = 1024
 const GRID_HEIGHT = 660
 const MIN_PRECHAIR_WAIT = 1
 const MAX_PRECHAIR_WAIT = 2
-const CHAIR_ROUND_WAIT = 15
-const CHAIRWINNER_ROUND_WAIT = 5
+const CHAIR_ROUND_WAIT = 30
+const CHAIRWINNER_ROUND_WAIT = 3
 
 const GAME_STATES = {
     LOBBY: 'LOBBY',
@@ -37,6 +37,7 @@ module.exports.numChairsTaken = numChairsTaken;
 module.exports.isAllChairsTaken = isAllChairsTaken;
 module.exports.checkWinCondition = checkWinCondition;
 module.exports.getLosers = getLosers;
+module.exports.resetRound = resetRound;
 
 function addPlayer(playerID,name) {
     const x = getRandomInt(0, GRID_WIDTH);
@@ -223,16 +224,10 @@ function startGame(){
 
 // State handlers
 
-onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,to) => {
-    // check win condition
-    // if(from === 'CHAIR'){
-    //     if(gameState.numPlayers <= 1){
-    //         changeState(GAME_STATES.FINALWINNER)
-    //         return
-    //     }
-    // }
+onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER],GAME_STATES.PRECHAIR, (from,to) => {
     let wait_time = getRandomInt(MIN_PRECHAIR_WAIT,MAX_PRECHAIR_WAIT)
     console.log(`Waiting for ${wait_time} seconds for chairs`)
+    resetRound()
     setTimeout(() => {
         // genreate chairs
         let alive = numPlayersAlive()
@@ -241,7 +236,9 @@ onStateChange([GAME_STATES.LOBBY,GAME_STATES.CHAIR],GAME_STATES.PRECHAIR, (from,
             return
         }
         let numchairs = alive - 1
+        console.log('added ',numchairs,' chairs')
         addChairs(numchairs)
+        console.log(getChairs())
         changeState(GAME_STATES.CHAIR)
     },1000*wait_time)
 })
@@ -250,12 +247,14 @@ onStateChange(GAME_STATES.PRECHAIR,GAME_STATES.CHAIR, (from,to) => {
     console.log(`Waiting ${CHAIR_ROUND_WAIT}s in chair round`)
     timer = setTimeout(()=> {
         console.log('Time has run out')
-        changeState(GAME_STATES.CHAIRWINNER)
-    },CHAIRWINNER_ROUND_WAIT*1000)
+        checkWinCondition()
+    },CHAIR_ROUND_WAIT*1000)
 })
 
 onStateChange(GAME_STATES.CHAIR,GAME_STATES.CHAIRWINNER, (from,to) => {
-    
+    setTimeout(() => {
+        changeState(GAME_STATES.PRECHAIR)
+    },CHAIRWINNER_ROUND_WAIT*1000)
 })
 
 // ===== MISC =====
