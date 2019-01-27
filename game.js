@@ -99,6 +99,9 @@ function getSOW(playerID) {
 }
 
 function claimChair(playerID,chairID){
+    if(!(chairID in chairState)){
+        return false
+    }
     chair = chairState[chairID]
     if(chair.taken){
         return false
@@ -134,7 +137,7 @@ function getChairs() {
 }
 
 function numPlayers(){
-    return playerState.keys.length
+    return Object.keys(playerState).length
 }
 
 function numPlayersAlive(){
@@ -144,7 +147,7 @@ function numPlayersAlive(){
 }
 
 function numChairs(){
-    return chairState.keys.length
+    return Object.keys(chairState).length
 }
 
 function numChairsTaken(){
@@ -159,12 +162,15 @@ function isAllChairsTaken(){
 
 function checkWinCondition(){
     console.log('checking win condition')
+    console.log('chairs taken',numChairs(),numChairsTaken(),isAllChairsTaken())
     let cond = isAllChairsTaken() || numPlayersAlive() <= 1
     if(cond){
         console.log('game has been won')
         // make everyone who lost dead
         let losers = getLosers()
+        console.log(losers)
         for(let l of losers){
+            console.log(l)
             playerState[l].alive = false
         }
         changeState(GAME_STATES.CHAIRWINNER)
@@ -176,9 +182,10 @@ function checkWinCondition(){
 }
 
 function getLosers(){
-    return Object.entries(playerState).filter(x => {
-        return !x[1].sitting
-    }).map(x => x.id)
+    let l = Object.entries(playerState).filter(x => {
+        return !(x[1].sitting)
+    })
+    return l.map(x => x[0])
 }
 
 function changeState(to) {

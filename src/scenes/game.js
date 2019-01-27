@@ -11,6 +11,7 @@ export default class Game extends Phaser.Scene {
         this.chairGroup = null
         this.playerSprite = null;
         this.playerContainer = null;
+        this.playerCanMove = true
         this.player_id = null
         this.name = null
     }
@@ -33,7 +34,7 @@ export default class Game extends Phaser.Scene {
     {
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
-        this.chairGroup = this.physics.add.staticGroup();
+        this.chairGroup = this.physics.add.group();
         this.enemyGroup = this.physics.add.group();
         console.log('created game');
         this.setupSocket(socket);
@@ -75,18 +76,19 @@ export default class Game extends Phaser.Scene {
         const x = (250 * Math.sin(radians));
         const y = (250 * Math.cos(radians));
 
-        if (this.cursors.up.isDown) {
-            this.playerContainer.body.setVelocity(-x, y);
-            hasMoved = true;
+        if(this.playerCanMove){
+            if (this.cursors.up.isDown) {
+                this.playerContainer.body.setVelocity(-x, y);
+                hasMoved = true;
+            }
+            else if (this.cursors.down.isDown) {
+                this.playerContainer.body.setVelocity(x, -y);
+                hasMoved = true;
+            }
+            else {
+                this.playerContainer.body.setVelocity(0, 0);
+            }
         }
-        else if (this.cursors.down.isDown) {
-            this.playerContainer.body.setVelocity(x, -y);
-            hasMoved = true;
-        }
-        else {
-            this.playerContainer.body.setVelocity(0, 0);
-        }
-
         if (hasMoved) {
             const {x, y} = this.playerContainer;
             const angle = this.playerSprite.angle;
@@ -117,26 +119,30 @@ export default class Game extends Phaser.Scene {
         const onPlayersCollide = (playerContainer, enemy) => {
             playerContainer.body.stop()
             enemy.body.stop()
-
-
             console.log("collission")
         }
-
+        
         // Add a collider
         playerContainer.setSize(scaledWidth, scaledHeight);
         this.physics.world.enable(playerContainer);
         playerContainer.body.setCircle(17)
         playerContainer.body.setCollideWorldBounds(true);
-        this.physics.add.overlap(playerContainer, this.chairGroup,this.onChairCollide);
+        this.physics.add.overlap(playerContainer, this.chairGroup,this.onChairCollide, null, this);
         this.physics.add.collider(playerContainer, this.enemyGroup,onPlayersCollide);
-
+        
         return {playerContainer, playerSprite};
     }
-
-    onChairCollide(a,b){
-        console.log('collision',a,b)
+    
+    onChairCollide(player,chair){
+        console.log('Hit chair',chair.chair_id)
+        if(chair.taken || chair.collided){
+            return
+        }
+        socket.emit('claim_chair',{
+            chair_id: chair.chair_id
+        })
     }
-
+    
     removeEnemy(enemyId) {
         const enemy = this.enemies[enemyId];
     
@@ -149,7 +155,7 @@ export default class Game extends Phaser.Scene {
         const {enemyState, enemyGameObject} = enemy
         enemyGameObject.setActive(false)
         enemyGameObject.setVisible(false)
-    
+        this.enemyGroup.remove(enemyGameObject)
         // Remove this enemy from our map of enemies
         delete enemy[enemyId]
     }
@@ -169,9 +175,10 @@ export default class Game extends Phaser.Scene {
     spawnChair(chair) {
         const chairGameObject = this.physics.add.image(chair.x, chair.y, 'chair');
         chairGameObject.setScale(0.4)
-        // chairGameObject.setSize(28,28,true);
-        // chairGameObject.setOffset(14,14);
         chairGameObject.depth = -1
+        chairGameObject.chair_id = chair.id
+        chairGameObject.collided = false
+        chairGameObject.taken = chair.taken
         this.chairs[chair.id] = {chair, chairGameObject}
         this.chairGroup.add(chairGameObject)
     }
@@ -179,6 +186,7 @@ export default class Game extends Phaser.Scene {
     createStateOfWorld(stateOfWorld) {
         console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
         const {players: enemies} = stateOfWorld;
+        this.player_id = stateOfWorld.playerID
         Object.values(enemies).forEach(enemy => {
             if(enemy.id !== this.player_id){
                 this.spawnEnemy(enemy)
@@ -201,6 +209,14 @@ export default class Game extends Phaser.Scene {
         enemyContainer.x = x;
         enemyContainer.y = y;
         enemySprite.angle = angle;
+    }
+
+    playerTakeChair(id){
+        let {chair,chairObject} = this.chairs[id]
+        this.playerContainer.setPosition(chair.x,chair.y)
+        this.playerCanMove = false
+        this.playerContainer.body.stop()
+        emitMove(this.playerContainer.x, this.playerContainer.y, this.playerSprite.angle)
     }
 
     setupSocket(socket) {
@@ -234,6 +250,17 @@ export default class Game extends Phaser.Scene {
             enemyMoveStates.forEach(enemyMoveState => self.moveEnemy(enemyMoveState));
         });
 
+        socket.on('chair_taken', msg => {
+            console.log('Chair taken: ',msg)
+            console.log(this.player_id)
+            if(this.player_id === msg.player_id){
+                console.log('thats you!')
+                self.playerTakeChair(msg.chair_id)
+            }else{
+                this.chairs[msg.chair_id].chairGameObject.taken = true
+            }
+        })
+
         socket.on('state_change',(msg) => {
             const {from,to} = msg
             if(from === 'PRECHAIR' && to === 'CHAIR'){
@@ -245,6 +272,7 @@ export default class Game extends Phaser.Scene {
                 }
                 return
             }
+            
         })
     }
 }

@@ -42,7 +42,7 @@ io.on('connection', (socket) => {
     let success = game.claimChair(playerId,msg.chair_id)
     if(success){
       console.log(`${playerId} claimed chair ${msg.chair_id}`)
-      io.broadcast('chair_taken',{
+      io.emit('chair_taken',{
         chair_id: msg.chair_id,
         player_id: playerId
       })
