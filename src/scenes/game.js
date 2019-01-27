@@ -8,7 +8,9 @@ export default class Game extends Phaser.Scene {
         this.enemies = {};
         this.enemyGroup = null
         this.chairs = {}
+        this.walls = []
         this.chairGroup = null
+        this.wallGroup = null
         this.playerSprite = null;
         this.playerContainer = null;
         this.playerCanMove = true
@@ -28,6 +30,7 @@ export default class Game extends Phaser.Scene {
         this.load.image('sky', 'assets/space3.png');
         this.load.image('player', 'assets/player/survivor-idle_handgun_0.png')
         this.load.image('chair', 'assets/chair.png')
+        this.load.image('wall', 'assets/wall.png')
     }
 
     create ()
@@ -35,6 +38,7 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
         this.chairGroup = this.physics.add.group();
+        this.wallGroup = this.physics.add.staticGroup();
         this.enemyGroup = this.physics.add.group();
         console.log('created game');
         this.setupSocket(socket);
@@ -100,6 +104,18 @@ export default class Game extends Phaser.Scene {
         const {playerContainer, playerSprite} = this.spawnCharacter(playerState);
         this.playerContainer = playerContainer;
         this.playerSprite = playerSprite;
+
+        this.tryAddPlayerAndWallsCollider()
+    }
+
+    tryAddPlayerAndWallsCollider() {
+        if (this.playerContainer === null || this.wallGroup === null) {
+            console.log("Failed to add player and walls collider. playerContainer or wallGroup is null");
+            return
+        }
+
+        this.physics.add.collider(this.playerContainer, this.wallGroup);
+        console.log("Succesfully added player and walls collider.");
     }
 
     spawnCharacter(playerState) {
@@ -184,14 +200,30 @@ export default class Game extends Phaser.Scene {
     }
     
     createStateOfWorld(stateOfWorld) {
-        console.log(`createStateOfWorld() stateOfWorld = ${JSON.stringify(stateOfWorld)}`);
-        const {players: enemies} = stateOfWorld;
+
+        console.log(`createStateOfWorld() `, stateOfWorld);
+
+        const {players: enemies, wallState} = stateOfWorld;
         this.player_id = stateOfWorld.playerID
         Object.values(enemies).forEach(enemy => {
             if(enemy.id !== this.player_id){
                 this.spawnEnemy(enemy)
             }
-        })
+        });
+
+        wallState.forEach(wall => this.createWall(wall))
+        this.tryAddPlayerAndWallsCollider()
+    }
+
+    createWall({x, y, width, height}) {
+        console.log(`createWall() x = ${x} y = ${y} width = ${width} height = ${height}`)
+
+        const movedX = x + (width / 2);
+        const movedY = y + (height / 2);
+        const scaleX = (width / 32);
+        const scaleY = (height / 32);
+
+        this.wallGroup.create(movedX, movedY, 'wall').setScale(scaleX, scaleY).refreshBody();
     }
     
     moveEnemy(enemyMoveState) {
