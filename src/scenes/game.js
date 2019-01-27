@@ -10,6 +10,7 @@ export default class Game extends Phaser.Scene {
         this.chairs = {}
         this.walls = []
         this.chairGroup = null
+        this.wallGroup = null
         this.playerSprite = null;
         this.playerContainer = null;
         this.player_id = null
@@ -28,6 +29,7 @@ export default class Game extends Phaser.Scene {
         this.load.image('sky', 'assets/space3.png');
         this.load.image('player', 'assets/player/survivor-idle_handgun_0.png')
         this.load.image('chair', 'assets/chair.png')
+        this.load.image('wall', 'assets/wall.png')
     }
 
     create ()
@@ -35,6 +37,7 @@ export default class Game extends Phaser.Scene {
         this.cameras.main.setBackgroundColor('#CCCCCC');
         this.cursors = this.input.keyboard.createCursorKeys();
         this.chairGroup = this.physics.add.staticGroup();
+        this.wallGroup = this.physics.add.staticGroup();
         this.enemyGroup = this.physics.add.group();
         console.log('created game');
         this.setupSocket(socket);
@@ -180,12 +183,26 @@ export default class Game extends Phaser.Scene {
     createStateOfWorld(stateOfWorld) {
         console.log(`createStateOfWorld() `, stateOfWorld);
 
-        const {players: enemies} = stateOfWorld;
+        const {players: enemies, wallState} = stateOfWorld;
+
         Object.values(enemies).forEach(enemy => {
             if(enemy.id !== this.player_id){
                 this.spawnEnemy(enemy)
             }
-        })
+        });
+
+        wallState.forEach(wall => this.createWall(wall))
+    }
+
+    createWall({x, y, width, height}) {
+        console.log(`createWall() x = ${x} y = ${y} width = ${width} height = ${height}`)
+
+        const movedX = x + 16;
+        const movedY = x + 16;
+        const scaleX = (width / 32);
+        const scaleY = (height / 32);
+
+        this.wallGroup.create(movedX, movedY, 'wall').setScale(scaleX, scaleY).refreshBody();
     }
     
     moveEnemy(enemyMoveState) {
