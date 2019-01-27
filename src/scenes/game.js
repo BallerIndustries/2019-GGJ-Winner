@@ -125,11 +125,16 @@ export default class Game extends Phaser.Scene {
         // Add a collider
         playerContainer.setSize(scaledWidth, scaledHeight);
         this.physics.world.enable(playerContainer);
+        playerContainer.body.setCircle(17)
         playerContainer.body.setCollideWorldBounds(true);
-        this.physics.add.overlap(playerContainer, this.chairGroup);
+        this.physics.add.overlap(playerContainer, this.chairGroup,this.onChairCollide);
         this.physics.add.collider(playerContainer, this.enemyGroup,onPlayersCollide);
 
         return {playerContainer, playerSprite};
+    }
+
+    onChairCollide(a,b){
+        console.log('collision',a,b)
     }
 
     removeEnemy(enemyId) {
@@ -156,13 +161,16 @@ export default class Game extends Phaser.Scene {
         enemyContainer.body.setImmovable(true)
         enemyContainer.body.setBounce(0,0)
         enemyContainer.body.setMass(1000)
+        enemyContainer.body.setCircle(17)
         //enemyContainer.body.moves = false;
         this.enemyGroup.add(enemyContainer)
     }
 
     spawnChair(chair) {
-        const chairGameObject = this.add.image(chair.x, chair.y, 'chair');
-        chairGameObject.setScale(0.4);
+        const chairGameObject = this.physics.add.image(chair.x, chair.y, 'chair');
+        chairGameObject.setScale(0.4)
+        // chairGameObject.setSize(28,28,true);
+        // chairGameObject.setOffset(14,14);
         chairGameObject.depth = -1
         this.chairs[chair.id] = {chair, chairGameObject}
         this.chairGroup.add(chairGameObject)
