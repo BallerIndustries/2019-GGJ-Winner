@@ -12,6 +12,7 @@ let moveUpdates = {}
 
 app.use(express.static(__dirname + '/dist'));
 app.use('/notified-Category_None', express.static(__dirname + '/dist'));
+app.use('/verify-Category_None', express.static(__dirname + '/dist'));
 
 io.on('connection', (socket) => {
   const playerId = socket.id
