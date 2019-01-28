@@ -45,7 +45,7 @@ export default class Name extends Phaser.Scene {
                 let playerName = this.name.join('');
 
                 if (playerName.toLowerCase().indexOf("kous") >= 0) {
-                    playerName = "LOSER"
+                    playerName = "Loser"
                 }
 
                 this.scene.start(dest,{name: playerName, from: 'Name'});
