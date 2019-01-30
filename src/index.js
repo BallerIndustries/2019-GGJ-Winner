@@ -1,3 +1,4 @@
+import Phaser from "phaser"
 import Name from './scenes/name'
 import Game from './scenes/game'
 import Lobby from './scenes/lobby'
