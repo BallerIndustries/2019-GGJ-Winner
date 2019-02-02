@@ -2,8 +2,8 @@ const _ = require('lodash')
 
 const GRID_WIDTH = 1024
 const GRID_HEIGHT = 660
-const MIN_PRECHAIR_WAIT = 5
-const MAX_PRECHAIR_WAIT = 10
+const MIN_PRECHAIR_WAIT = 5000
+const MAX_PRECHAIR_WAIT = 10000
 const CHAIR_ROUND_WAIT = 20
 const CHAIRWINNER_ROUND_WAIT = 3
 
